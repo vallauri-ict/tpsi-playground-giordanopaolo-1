@@ -2,6 +2,7 @@ import * as _http from "http";
 import * as _url from "url";
 import * as _fs from "fs";
 import * as _mime from "mime";
+import * as _Querystring from querystring
 let HEADERS = require("./headers.json");
 let paginaErrore : string ;
 
@@ -34,33 +35,29 @@ class Dispatcher{
             // la chiamata non esiste quinid do un messaggio di errore
         }
     }
-    
-    dispach(req, res){
-        let metodo = req.method;
-        // parsing della url ricevuta
-        let url = _url.parse(req.url, true);// "true" parsifica anche i parametri
-        let risorsa = url.pathname;
-        let parametri = url.query;
-        console.log(`${this.prompt} ${metodo} alla risorsa: ${risorsa} ${JSON.stringify(parametri)}`);
-        
-        if(risorsa.startsWith("/api/")){
-            if(risorsa in this.listeners[metodo])// this è necessario nelle classi
-            {
-                let callback = this.listeners[metodo][risorsa];
-                callback(req, res);// lancio in esecuzione la callback
-            }
-            else {
-                // il client si aspetta un json
-                // in caso di errore al posto del json possiamo mandagli una stringa
-                res.writeHead(404, HEADERS.text);
-                res.write("Errore: pagina non trovata");
-                res.end();
-            }
+    dispatch(req, res){
+        let metodo = req.method.toUpperCase();
+        if(metodo == "GET")
+        {
+            innerDispach(req, res)
         }
         else {
-            staticListener(req, res, risorsa);
+            let parametriBody: string = "";
+            req.on("data", function(data){
+                parametriBody+=data;
+            })
+            let parametriJson = {};
+            req.on("end", function () {
+                try{
+                    // se i parametri di parametribody sono in json va tutto bene in caso contrario passo dal catch perchè sono degli url encoded
+                    parametriJson = JSON.parse(parametriBody);
+                }catch(Ex){
+                    
+                }
+            })
         }
     }
+    
 }
 function staticListener(req, res, risorsa) {
     //risorsa comincia semre con /
@@ -91,5 +88,31 @@ function init() {
         }
         else paginaErrore= "<h1> Pagina non trovata </h1>"
     });
+}
+function innerDispach(req, res){
+    let metodo = req.method;
+    // parsing della url ricevuta
+    let url = _url.parse(req.url, true);// "true" parsifica anche i parametri
+    let risorsa = url.pathname;
+    let parametri = url.query;
+    console.log(`${this.prompt} ${metodo} alla risorsa: ${risorsa} ${JSON.stringify(parametri)}`);
+    
+    if(risorsa.startsWith("/api/")){
+        if(risorsa in this.listeners[metodo])// this è necessario nelle classi
+        {
+            let callback = this.listeners[metodo][risorsa];
+            callback(req, res);// lancio in esecuzione la callback
+        }
+        else {
+            // il client si aspetta un json
+            // in caso di errore al posto del json possiamo mandagli una stringa
+            res.writeHead(404, HEADERS.text);
+            res.write("Errore: pagina non trovata");
+            res.end();
+        }
+    }
+    else {
+        staticListener(req, res, risorsa);
+    }
 }
 module.exports = new Dispatcher();
