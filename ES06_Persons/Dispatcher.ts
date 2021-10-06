@@ -4,6 +4,8 @@ import * as _fs from "fs";
 import * as _mime from "mime";
 import * as _queryString from "query-string";
 let HEADERS = require("./headers.json");
+let persons = require("./persons.json");
+
 let paginaErrore : string;
 
 class Dispatcher{
@@ -132,16 +134,19 @@ function staticListener (req, res, risorsa) {
     });
 }
 
-dispatcher.addListener("POST", "servizio1", function (req, res) {
+// -----------------------------------------------------------------------------------------
+// registrazione servizi:
+dispatcher.addListener("GET", "/nazioni", function (req, res)// mi devo ricordare lo /
+{
+    let nazioni = []
     res.writeHead(200, HEADERS.json);
-    let nome = req["BODY"].nome;
-    res.write(`{"nome" : "${nome}"}`);
-    res.end();
-});
-
-dispatcher.addListener("GET", "servizio2", function (req, res) {
-    res.writeHead(200, HEADERS.json);
-    let nome = req["GET"].nome;
-    res.write(`{"nome" : "${nome}"}`);
+    for (const person of persons["results"]) {
+        if(!person.includes(person.location.country))
+        {
+            nazioni.push(person.location.country);
+        }
+    }
+    nazioni.sort();
+    res.write(JSON.stringify('{"nazioni":nazioni}'));
     res.end();
 });
