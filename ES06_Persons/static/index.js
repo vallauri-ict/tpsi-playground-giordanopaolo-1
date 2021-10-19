@@ -33,10 +33,24 @@ $(document).ready(function() {
                     $("<td>").appendTo(tr).html(person[key]);
                 }
                 let td = $("<td>").appendTo(tr);
-                $("<button>").appendTo(td).text("dettagli")
+                $("<button>").appendTo(td).text("dettagli").on("click",dettagli).prop("name",person.name)
                 td = $("<td>").appendTo(tr);
-                $("<button>").appendTo(td).text("dettagli")
+                $("<button>").appendTo(td).text("elimina").on("click",elimina).prop("name",person.name)
             }
+        })
+    }
+    function dettagli(){
+        let name = $(this).prop("name");
+        let request = inviaRichiesta("PATCH","/api/dettagli",{"person":name})
+        request.fail(errore);
+        request.done(function(data){
+            console.log(data);
+            _divDettagli.show(1000);
+            $(".card-img-top").prop('src',data.picture);
+            $(".card-title").html(name);
+            let g = "<b> gender:</b>" + data.gender + "<br>" + 
+            "<b> address:</b>"
+        
         })
     }
  

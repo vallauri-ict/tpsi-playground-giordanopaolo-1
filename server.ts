@@ -1,6 +1,6 @@
-import * as _http from "http";
-const dispatcher = require("./Dispatcher.ts");
-const HEADERS = require("./headers.json");
+import * as _http from "http"
+const {Dispatcher} from "./Dispatcher"
+const HEADERS from "./headers.json"
 
 const PORT :number = 1337;
 
