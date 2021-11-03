@@ -27,17 +27,14 @@ dispatcher.addListener("POST", "/api/dettagli", (req, res) => {
   let data = fs.readFileSync(nomeFile);
 
   res.writeHead(200, HEADERS.json);
-  console.log();
-  res.write(JSON.stringify("" + data.toString() + ""));
+  res.write(JSON.stringify(data.toString()));
   res.end();
 
   let news = fs.readFileSync("./notizie.json")
   for (let i=0; i<notizie.length; i++) {
-    console.log("ciao bello\n")
     if("./news/" + notizie[i]["file"] == nomeFile)
     {
       notizie[i]["visualizzazioni"] = notizie[i]["visualizzazioni"] + 1;
-      console.log("ciao bollo\n\n\n\n\n\n")
     }
   }
 

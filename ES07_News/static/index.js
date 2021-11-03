@@ -2,9 +2,6 @@
 $(document).ready(function() {
     let wrapper = $("#wrapper");
     let news = $("#news");
-    let _divDettagli = $("#divDettagli");
-
-    _divDettagli.hide();
 
     let request = inviaRichiesta("GET","/api/elenco");
     request.fail(errore);
@@ -23,12 +20,12 @@ $(document).ready(function() {
             let a = $("<a>");
             span.text("Leggi");
             span.on("click",function(){
-                let request2 = inviaRichiesta("POST","/api/dettagli",{notizia:item.file});
+                let request2 = inviaRichiesta("POST","/api/dettagli",{"notizia":item.file});
                 request2.fail(errore);
                 request2.done(function(data){
                     console.log(data);
                     news.text(data)
-                    span2.text("visualizzato " + item.visualizzazioni + " Volte")
+                    
                 })
             })
             wrapper.append(a);
