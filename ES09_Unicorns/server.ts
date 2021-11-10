@@ -157,7 +157,7 @@ mongoClient.connect(connectionstrng, function(err, client){// query 11b
     let db = client.db(dbName);
     let collection = db.collection("Unicorns");
     collection.find({"gender":"m"}).
-            sort({"vampires":-1,"name":1}).
+             ({"vampires":-1,"name":1}).
             project({"name":1,"vampires":1,"_id":0}).
             toArray(function(err, data)
     {
