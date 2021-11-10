@@ -221,7 +221,23 @@ mongoClient.connect(connectionstrng, function(err, client){// query 13
   else console.log("no")
 })
 
-mongoClient.connect(connectionstrng, function(err, client){// query 13
+
+mongoClient.connect(connectionstrng, function(err, client){// query 14
+  if(!err)
+  {
+    let db = client.db(dbName);
+    let collection = db.collection("Unicorns");
+    let r = collection.distinct("loves",{"gender":"f"},
+    function(err, data){
+      console.log("14",data); client.close()
+    })
+    
+
+  }
+  else console.log("no")
+})
+
+mongoClient.connect(connectionstrng, function(err, client){// query 15
   if(!err)
   {
     let db = client.db(dbName);
@@ -230,7 +246,7 @@ mongoClient.connect(connectionstrng, function(err, client){// query 13
     function(err, data){
       collection.deleteMany({"name":"Baka Bibi"},
       function(err1,data1){
-        console.log(data)
+        console.log("15",data)
     client.close()
 
       })
@@ -240,6 +256,7 @@ mongoClient.connect(connectionstrng, function(err, client){// query 13
   else console.log("no")
 })
 
+
 mongoClient.connect(connectionstrng, function(err, client){// query 16
   if(!err)
   {
@@ -247,7 +264,7 @@ mongoClient.connect(connectionstrng, function(err, client){// query 16
     let collection = db.collection("Unicorns");
     let r = collection.updateOne({"name":"Bibi"},{$inc:{"vampires":1}},{upsert:true},
     function(err, data){
-      console.log("16",data);
+      console.log("17",data);
       client.close();
     })
 
@@ -263,7 +280,84 @@ mongoClient.connect(connectionstrng, function(err, client){// query 17
     let collection = db.collection("Unicorns");
     let r = collection.updateOne({"name":"Aurora"},{$inc:{"weight":10},$addToSet:{"loves":"carrots"}},
     function(err, data){
-      console.log("16",data);
+      console.log("18",data);
+      client.close();
+    })
+
+  }
+  else console.log("no")
+})
+
+mongoClient.connect(connectionstrng, function(err, client){// query 18
+  if(!err)
+  {
+    let db = client.db(dbName);
+    let collection = db.collection("Unicorns");
+    let r = collection.updateMany({"vaccinated":{"$exists":true}},{$set:{"vaccinated":false}},
+    function(err, data){
+      console.log("18",data);
+      client.close();
+    })
+
+  }
+  else console.log("no")
+})
+
+mongoClient.connect(connectionstrng, function(err, client){// query 19
+  if(!err)
+  {
+    let db = client.db(dbName);
+    let collection = db.collection("Unicorns");
+    let r = collection.updateMany({"vaccinated":{"$exists":true}},{$inc:{"vampires":1}},{upsert:true},
+    function(err, data){
+      console.log("19",data);
+      client.close();
+    })
+
+  }
+  else console.log("no")
+})
+
+mongoClient.connect(connectionstrng, function(err, client){// query 20
+  if(!err)
+  {
+    let db = client.db(dbName);
+    let collection = db.collection("Unicorns");
+    let r = collection.deleteMany({"loves":{$all:["carrots","grapes"]}},
+    function(err, data){
+      console.log("20",data);
+      client.close();
+    })
+
+  }
+  else console.log("no")
+})
+
+mongoClient.connect(connectionstrng, function(err, client){// query 21
+  if(!err)
+  {
+    let db = client.db(dbName);
+    let collection = db.collection("Unicorns");
+    let r = collection.find({"gender":"f"}).sort({"vampires":-1}).limit(1).toArray(
+    function(err, data){
+      console.log("21",data);
+      client.close();
+    })
+
+  }
+  else console.log("no")
+})
+
+//Sostituire completamente il record dell’unicorno Pluto con un nuovo record
+
+mongoClient.connect(connectionstrng, function(err, client){// query 22
+  if(!err)
+  {
+    let db = client.db(dbName);
+    let collection = db.collection("Unicorns");
+    let r = collection.replaceOne({"name":"Pluto"},{"name":"Pluto","Residenza":"Fossano" },
+    function(err, data){
+      console.log("22",data);
       client.close();
     })
 
