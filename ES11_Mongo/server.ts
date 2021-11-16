@@ -1,48 +1,114 @@
-import * as http from "http";
-import HEADERS from "./headers.json";
 import * as mongodb from "mongodb";
 const mongoClient = mongodb.MongoClient
-import { Dispatcher } from "./Dispatcher";
-import fs from "fs";
 
 const PORT: number = 27017;
-
-let dispatcher: Dispatcher = new Dispatcher();
-
-const server = http.createServer((req, res) => {
-  dispatcher.dispatch(req, res);
-});
-
-server.listen(PORT);
 console.log(`Server in ascolto sulla porta: ${PORT}`);
 
+
 mongoClient.connect("mongodb://127.0.0.1:27017",function(err, client){
-  console.log(err);
+
   if(!err)
   {
     let dba = client.db("5B_Student");
-    let collection = dba.collection("Student");
-    let student = {"name":"Bianca","congnome":"Teleman","hobbys":["si","no"]}
-    collection.insertOne(student,function(err,data){
-      if(!err) console.log(data)
+    let collection = dba.collection("unicorns");
+    let req = collection.aggregate([
+      {
+        "$match":{"$exists":true}
+      },
+      {
+        "$group":{"_id":"$gender","totale":{"$sum":1}}
+      }
+    ]).toArray();
+    req.then(function(data){
+      if(!err)
+        console.log("1", data);
+      else console.log(err.message)
+    })
+    req.finally(function(){
       client.close();
     })
   }
 })
 
 mongoClient.connect("mongodb://127.0.0.1:27017",function(err, client){
-  console.log(err);
+
   if(!err)
   {
     let dba = client.db("5B_Student");
-    let collection = dba.collection("Student");
-    collection.find().toArray(function(err, data){
+    let collection = dba.collection("unicorns");
+    let req = collection.aggregate([
+      {
+        "$match":{"$exists":true}
+      },
+      {
+        "$group":{"_id":{"gender":"$gender"},"Media":{"$avg":"$vampires"}}
+      }
+    ]).toArray();
+    req.then(function(data){
       if(!err)
-        console.log(data);
+        console.log("2", data);
       else console.log(err.message)
-    });
+    })
+    req.finally(function(){
+      client.close();
+    })
   }
-  client.close();
+})
+
+mongoClient.connect("mongodb://127.0.0.1:27017",function(err, client){
+  if(!err)
+  {
+    let dba = client.db("5B_Student");
+    let collection = dba.collection("unicorns");
+    let req = collection.aggregate([
+      {
+        "$match":{"$exists":true}
+      },
+      {
+        "$group":{"_id":{"gender":"$gender","hair":"$hair"},"nEsemplari":{"$sum":"1"}}
+      },
+      {
+        "$sort":{"nEsemplari":-1,"_id":-1}
+      }
+    ]).toArray();
+    req.then(function(data){
+      if(!err)
+        console.log("3", data);
+      else console.log(err.message)
+    })
+    req.finally(function(){
+      client.close();
+    })
+  }
+})
+
+
+mongoClient.connect("mongodb://127.0.0.1:27017",function(err, client){
+
+  if(!err)
+  {
+    let dba = client.db("5B_Student");
+    let collection = dba.collection("unicorns");
+    let req = collection.aggregate([
+      {
+        "$match":{"$exists":true}
+      },
+      {
+        "$group":{"_id":{"gender":"$gender","hair":"$hair"},"nEsemplari":{"$sum":"1"}}
+      },
+      {
+        "$sort":{"nEsemplari":-1,"_id":-1}
+      }
+    ]).toArray();
+    req.then(function(data){
+      if(!err)
+        console.log("4", data);
+      else console.log(err.message)
+    })
+    req.finally(function(){
+      client.close();
+    })
+  }
 })
 
 
