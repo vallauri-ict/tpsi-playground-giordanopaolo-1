@@ -57,7 +57,37 @@ mongoClient.connect(connectionstrng, function(err, client){// query 2
      }]).toArray(); 
 
     ris.then(function(data){
-      console.log("1",data)
+      console.log("2",data)
+    })
+    ris.catch(function(err){
+      console.log("ERRORE", err)
+    })
+    ris.finally(function(){
+      client.close();
+    })
+  }
+  else console.log("no")
+})
+
+mongoClient.connect(connectionstrng, function(err, client){// query 8
+  if(!err)
+  {
+    let db = client.db(dbName);  
+    let collection = db.collection("students");
+    let ris = collection.aggregate([{
+      "$match": {
+        "genere": "female"},
+      "$project":{
+        "media": { $avg: "$voti" },
+        "nome":1,
+        "classe":1
+      },
+      "$sort":{"media":-1},
+      "$skip":1,"$limit":1
+     }]).toArray(); 
+
+    ris.then(function(data){
+      console.log("8",data)
     })
     ris.catch(function(err){
       console.log("ERRORE", err)

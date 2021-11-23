@@ -5,7 +5,7 @@ const PORT: number = 27017;
 console.log(`Server in ascolto sulla porta: ${PORT}`);
 
 
-mongoClient.connect("mongodb://127.0.0.1:27017",function(err, client){
+/*mongoClient.connect("mongodb://127.0.0.1:27017",function(err, client){
 
   if(!err)
   {
@@ -109,6 +109,44 @@ mongoClient.connect("mongodb://127.0.0.1:27017",function(err, client){
       client.close();
     })
   }
-})
+})*/
 
+
+mongoClient.connect("mongodb://127.0.0.1:27017",function(err, client){
+
+  if(!err)
+  {
+    let dba = client.db("5B_Student");
+    let collection = dba.collection("Unicorns");
+    let req = collection.aggregate([
+        {"$project": 
+          {
+            "quizAvg":{$avg:"$quizzes"}, 
+            "labAvg":{$avg:"$labs"},
+            "examAvg":{$avg:["$final","$midterm"]}
+          },
+          {"$group":
+            {"_id":{}, mediaQuiz:{$avg:"$quizAvg"}, mediaLab:{$avg:"$labAvg"},
+            mediaExam:{$avg:"$examAvg"} 
+            }
+          }
+        },
+        {"$project":
+          {
+            "quizAvg":{"$round":"$quizzes"},
+            "labAvg":{"$round":"$labs"},
+            "examAvg":{"$round":["midterm","final"]}
+          }
+        }
+    ]).toArray();
+    req.then(function(data){
+      if(!err)
+        console.log("6", data);
+      else console.log(err.message)
+    })
+    req.finally(function(){
+      client.close();
+    })
+  }
+})
 
