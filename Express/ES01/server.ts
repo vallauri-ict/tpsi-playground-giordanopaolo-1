@@ -2,12 +2,18 @@ import * as _http from "http";
 import express from "express";
 import * as fs from "fs";
 import * as bp from "body-parser";
+//mongo
+import * as _mongodb from "mongodb";
+const mongoClient = _mongodb.MongoClient;
+//const CONNECTIONSTRING = "mongodb://127.0.0.1:27017"; locale
+const CONNECTIONSTRING = "mongodb+srv://admin:admin@cluster0.s46xc.mongodb.net/5B?retryWrites=true&w=majority";
+const dbName = "5B";
 
 let expresso = express();
 const PORT :number = 1337;
 
 const server = _http.createServer(expresso);
-
+// app = expresso
 server.listen(PORT);
 console.log(`Il server è in ascolto sulla porta ${PORT}`);
 
@@ -44,30 +50,80 @@ expresso.use("/", bp.urlencoded({"extended":true}))//per leggere i parametri in 
 expresso.use("/", function(req, res, next){
     if(Object.keys(req.query).length > 0)
     {
-        console.log("Parametri GET", req.query)// fa lui in automatico lo stringfy
+        console.log("         Parametri GET:", req.query)// fa lui in automatico lo stringfy
     }
     if(Object.keys(req.body).length > 0)
     {
-        console.log("Parametri BODY", req.body)// fa lui in automatico lo stringfy
+        console.log("         Parametri BODY:", req.body)// fa lui in automatico lo stringfy
     }
     next(); 
 })
 
-// 5) listener
-// route
+// 5) listener di risposta la client
+// route della creazione della connessione
+// tutti i listeners fanno 2 cose alternative 
+                                            // -- risposta al client, oppure
+                                            // -- next() 
+expresso.use("/", function(req, res, next){
+    mongoClient.connect(CONNECTIONSTRING,function(err, client){
+        if(err)
+        {
+            res.status(503).send("Db connection failed");
+        }
+        else 
+        {
+            console.log("Connessione riuscita");
+            req["client"] = client;
+            next();
+        }
+    })
+})
 expresso.get("/api/servizio1", function(req, res, next){
-    let nome = req.query.nome;
-    if(nome){
-        res.send({"nome":nome})
+    let unicorn = req.query.nome;
+    if(unicorn){
+        let db = req["client"].db(dbName) as _mongodb.Db;
+        let collection = db.collection("unicorns");
+        let request = collection.find({"name":unicorn}).toArray();
+        request.then(function (data) { 
+            res.send(data)
+        });
+        request.catch(function (err) {
+            res.status(503).send("errore nella sintassi della queery");
+        });
+        request.finally(function () {
+            req["client"].close();
+        });
+    }
+    else
+    {
+        res.status(400).send("Manca il parametro UnicornName");
+        req["client"].close();
     }
 })
 
 // 6) listener
 // route
-expresso.post("/api/servizio1", function(req, res, next){
-    let nome = req.body.nome;
-    if(nome){
-        res.send({"nome":nome})
+expresso.patch("/api/servizio1", function(req, res, next){
+    let unicorn = req.body.nome;
+    let incVampires = req.body.vampires;
+    if(unicorn && incVampires){
+        let db = req["client"].db(dbName) as _mongodb.Db;
+        let collection = db.collection("unicorns");
+        let request = collection.updateOne({"name":unicorn},{$inc:{vampires:incVampires}});
+        request.then(function (data) { 
+            res.send(data)
+        });
+        request.catch(function (err) {
+            res.status(503).send("errore nella sintassi della queery");
+        });
+        request.finally(function () {
+            req["client"].close();
+        });
+    }
+    else
+    {
+        res.status(400).send("Manca almeno un parametro tra: name e incVampires");
+        req["client"].close();
     }
 })
 
