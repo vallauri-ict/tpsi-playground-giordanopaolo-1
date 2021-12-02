@@ -103,7 +103,7 @@ expresso.get("/api/servizio1", function(req, res, next){
 
 // 6) listener
 // route
-expresso.patch("/api/servizio1", function(req, res, next){
+expresso.patch("/api/servizio2", function(req, res, next){
     let unicorn = req.body.nome;
     let incVampires = req.body.vampires;
     if(unicorn && incVampires){
@@ -127,6 +127,25 @@ expresso.patch("/api/servizio1", function(req, res, next){
     }
 })
 
+// 7) listener
+// route
+expresso.get("/api/servizio3/:gender/:hair", function(req, res, next){
+    var gender = req.params.gender;
+    var hair = req.params.hair;
+    // la if sull'esistenza dei parametri in questo caso non serve perchè non entrerebbe nella route
+    let db = req["client"].db(dbName) as _mongodb.Db;
+    let collection = db.collection("unicorns");
+    let request = collection.find({$and:[{"gender":gender}, {"hair":hair}]}).toArray();
+    request.then(function (data) { 
+        res.send(data)
+    });
+    request.catch(function (err) {
+        res.status(503).send("errore nella sintassi della queery");
+    });
+    request.finally(function () {
+        req["client"].close();
+    });
+})
 //******************************************/
 // default route e route di gestione degli errori delle risorse
 //******************************************/
@@ -139,3 +158,9 @@ expresso.use("/", function(req, res, next){
         res.send(paginaErrore);// default route
     }
 })
+
+// route di gestione errori
+expresso.use(function(err, req, res, next) {
+    console.log("Errore codice server", err.message)     
+});
+    
