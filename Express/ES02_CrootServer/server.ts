@@ -78,38 +78,43 @@ expresso.use("/", function(req, res, next){
         }
     })
 })
-expresso.get("/api/servizio1", function(req, res, next){
-    let unicorn = req.query.nome;
-    if(unicorn){
-        let db = req["client"].db(dbName) as _mongodb.Db;
-        let collection = db.collection("unicorns");
-        let request = collection.find({"name":unicorn}).toArray();
-        request.then(function (data) { 
-            res.send(data)
-        });
-        request.catch(function (err) {
-            res.status(503).send("errore nella sintassi della queery");
-        });
-        request.finally(function () {
-            req["client"].close();
-        });
-    }
-    else
-    {
-        res.status(400).send("Manca il parametro UnicornName");
+//6
+expresso.get("/api/getCollections", function(req, res, next){
+    let db = req["client"].db(dbName) as _mongodb.Db;
+    let request = db.listCollections().toArray();
+    request.then(function (data) { 
+        res.send(data)
+    });
+    request.catch(function (err) {
+        res.status(503).send("errore nella sintassi della queery");
+    });
+    request.finally(function () {
         req["client"].close();
-    }
+    });
+})
+let currentCollection="";
+let id="";
+
+// expresso.use("/api/:collection", function(req, res, next){
+//     console.log("Ciao");
+//     currentCollection = req.params.collection;
+//     next();
+// })
+// route
+expresso.use("/api/:collection/:id?", function(req, res, next){
+    console.log("sono passato da /api/:collection/:id?");
+    currentCollection = req.params.collection;
+    id = req.params.id;
+    next();
 })
 
-// 6) listener
-// route
-expresso.patch("/api/servizio2", function(req, res, next){
-    let unicorn = req.body.nome;
-    let incVampires = req.body.vampires;
-    if(unicorn && incVampires){
-        let db = req["client"].db(dbName) as _mongodb.Db;
-        let collection = db.collection("unicorns");
-        let request = collection.updateOne({"name":unicorn},{$inc:{vampires:incVampires}});
+expresso.get("/api/*", function(req, res, next){
+    let db = req["client"].db(dbName) as _mongodb.Db;
+    
+    let collection = db.collection(currentCollection);
+    if(!id)
+    {
+        let request = collection.find().toArray();
         request.then(function (data) { 
             res.send(data)
         });
@@ -120,17 +125,27 @@ expresso.patch("/api/servizio2", function(req, res, next){
             req["client"].close();
         });
     }
-    else
-    {
-        res.status(400).send("Manca almeno un parametro tra: name e incVampires");
-        req["client"].close();
+    else {
+        let oid = new _mongodb.ObjectId(id);
+        let request = collection.find({"_id":oid}).toArray();
+        request.then(function (data) { 
+            res.send(data)
+        });
+        request.catch(function (err) {
+            res.status(503).send("errore nella sintassi della queery");
+        });
+        request.finally(function () {
+            req["client"].close();
+        });
+        id="";
     }
+    
 })
 
 // 7) listener
 // route
 expresso.get("/api/servizio3/:gender/:hair", function(req, res, next){
-    var gender = req.params.gender;
+    let gender = req.params.gender;
     var hair = req.params.hair;
     // la if sull'esistenza dei parametri in questo caso non serve perchè non entrerebbe nella route
     let db = req["client"].db(dbName) as _mongodb.Db;
