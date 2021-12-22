@@ -1,5 +1,3 @@
-"use strict"
-
 $(document).ready(function() {
 
     let divIntestazione = $("#divIntestazione")
@@ -7,7 +5,7 @@ $(document).ready(function() {
     let table = $("#mainTable")
     let divDettagli = $("#divDettagli")
     let currentCollection = "";
-    let filters = $(".card").eq(0).hide()
+    let filters = $(".card").eq(0).hide();
 
     let request = inviaRichiesta("get", "api/getCollections");
     request.fail(errore)
@@ -56,9 +54,14 @@ $(document).ready(function() {
           let div = $("<div>");
           div.prop("id",item._id);
           div.appendTo(td);
+          div.on("click", modifica)
           div = $("<div>");
+          div.prop("id",item._id);
+          div.on("click", sostituisci)
           div.appendTo(td);
           div = $("<div>");
+          div.prop("id",item._id);
+          div.on("click", elimina)
           div.appendTo(td);
           
         }
@@ -71,8 +74,54 @@ $(document).ready(function() {
      let request = inviaRichiesta("get", "/api/" + currentCollection + "/" + $(this).prop("id"))
      request.fail(errore);
      request.done(function(data){
-       console.log(data);
+        console.log(data);
+        let content="";
+        for (const key in data) {
+          content+= "<strong>" + key + ": </strong>" + data[key] + "</br>"
+        }
+        divDettagli.html(content)
      })
+   }
+   $("#btnAdd").on("click", function(){
+     divDettagli.empty();
+     let txtA = $("<textarea>");
+     txtA.val("{'name':''}");
+     txtA.appendTo(divDettagli);
+
+     let btnInvia = $("<button>");
+     btnInvia.appendTo(divDettagli);
+     btnInvia.text("Invia");
+     btnInvia.on("click", function(){
+       try {
+         param = JSON.parse(txtA.val());
+       } catch (error) { alert("Json formato non corretto")       }
+
+       let id = ""
+       let request = inviaRichiesta("post", "/api/" + currentCollection + "/" + id, param)
+       request.fail(errore);
+       request.done(function(){
+        alert("Record aggiunto correttamente")
+       })
+     })
+
+   })
+   function sostituisci(){
+
+   }
+
+   function modifica(){
+
+
+   }
+
+   function elimina(){
+     let request = inviaRichiesta("delete", "/api/" + currentCollection + "/" + $(this).prop("id"))
+     request.fail(errore);
+     request.done(function(data){
+        console.log(data);
+        alert("dato eliminato correttamente");
+     })
+
    }
    
    

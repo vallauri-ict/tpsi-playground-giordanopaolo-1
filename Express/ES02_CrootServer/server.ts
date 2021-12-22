@@ -102,7 +102,6 @@ let id="";
 // })
 // route
 expresso.use("/api/:collection/:id?", function(req, res, next){
-    console.log("sono passato da /api/:collection/:id?");
     currentCollection = req.params.collection;
     id = req.params.id;
     next();
@@ -127,7 +126,7 @@ expresso.get("/api/*", function(req, res, next){
     }
     else {
         let oid = new _mongodb.ObjectId(id);
-        let request = collection.find({"_id":oid}).toArray();
+        let request = collection.findOne({"_id":oid});
         request.then(function (data) { 
             res.send(data)
         });
@@ -151,6 +150,39 @@ expresso.get("/api/servizio3/:gender/:hair", function(req, res, next){
     let db = req["client"].db(dbName) as _mongodb.Db;
     let collection = db.collection("unicorns");
     let request = collection.find({$and:[{"gender":gender}, {"hair":hair}]}).toArray();
+    request.then(function (data) { 
+        res.send(data)
+    });
+    request.catch(function (err) {
+        res.status(503).send("errore nella sintassi della queery");
+    });
+    request.finally(function () {
+        req["client"].close();
+    });
+})
+
+expresso.post("/api/*", function(req, res, next){
+    let db = req["client"].db(dbName) as _mongodb.Db;
+    let collection = db.collection(currentCollection);
+    let request = collection.insertOne(req["body"]);
+    request.then(function (data) { 
+        console.log("1")
+        res.send(data)
+    });
+    request.catch(function (err) {
+        console.log("2")
+
+        res.status(503).send("errore nella sintassi della queery");
+    });
+    request.finally(function () {
+        req["client"].close();
+    });
+})
+
+expresso.delete("/api/:collection/:id", function(req, res, next){
+    let db = req["client"].db(dbName) as _mongodb.Db;
+    let collection = db.collection(currentCollection);
+    let request = collection.deleteOne(req["body"]);
     request.then(function (data) { 
         res.send(data)
     });
