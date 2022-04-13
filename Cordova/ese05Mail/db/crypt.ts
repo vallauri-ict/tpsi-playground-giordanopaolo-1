@@ -4,7 +4,6 @@ import {MongoClient, ObjectId}  from "mongodb";
 import bcrypt from "bcryptjs"
 
 const DBNAME = "mail"
-const CONNECTIONSTRING =  "mongodb+srv://admin:admin@cluster0.s46xc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
 
 let cnt=0;
