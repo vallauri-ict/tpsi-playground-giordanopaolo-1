@@ -9,6 +9,7 @@ $(document).ready(function() {
     mailRQ.done(function(data) {
         $(".container").css("visibility", "visible")
         visualizzaMail(data);
+        console.log(data);
     });
     mailRQ.fail(errore)
 
