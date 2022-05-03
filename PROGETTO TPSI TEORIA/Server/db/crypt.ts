@@ -3,7 +3,8 @@
 import {MongoClient, ObjectId}  from "mongodb";
 import bcrypt from "bcryptjs"
 
-const DBNAME = "mail"
+const DBNAME = "5B"
+const CONNECTIONSTRING =  "mongodb+srv://simone:admin@cluster0.kmj18.mongodb.net/5B?retryWrites=true&w=majority";
 
 
 let cnt=0;
