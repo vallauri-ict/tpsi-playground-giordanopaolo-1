@@ -75,7 +75,7 @@ marcatore1.addListener("click", function(){
             });
             
             marcatore.addListener("click",function(){
-                divDettagli.css("visibility","visible");
+                divDettagli.css("visibility","visible"); 
                 console.log(perizia._id)
                 $("#txtIdBelow").val(perizia._id);
                 $("#txtPlace").val(perizia.Luogo);
