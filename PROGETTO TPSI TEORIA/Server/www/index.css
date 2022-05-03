@@ -16,6 +16,18 @@
 	width:100%;
 	font-size:0.88em;
 }
+
+.my-form{
+	border:1px solid #AAA; 
+	background-color:#F2F2FF; 
+	padding:10px;	
+	margin:10px;
+}
+.my-form div{
+		
+	margin:10px;
+}
+
 #divDetails input{
 	margin: 12px;
 }

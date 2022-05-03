@@ -49,7 +49,9 @@ $(document).ready(function() {
 			});
 			request.done(function(_id,test_status,jqXHR) {	
 				//alert(_id);
-				localStorage.setItem("_id", _id)
+				if(_username.val() != "admin")
+					localStorage.setItem("_id", _id);
+				else localStorage.setItem("_id", "0");
 				window.location.href = "index.html";
 			})			
 		}

@@ -7,7 +7,21 @@ $(document).ready(function() {
     divDettagli.css("visibility","hidden");
     let imgCard = $("#imgCard");
     $("#imgCard").remove();
-
+    $("#creaUser").css("display", "none");
+    $("#btncreateUser").on("click", function(){
+        let newUser = {
+            "name":$("#txtNewName").val(),
+            "cognome":$("#txtNewSurname").val(),
+            "username":$("#txtNewUser").val(),
+            "dob":$("#txtNewDob").val()
+        };
+        // invio l'utente a cui manca solo l'_id e la password
+        let req = inviaRichiesta("POST", "/api/sendnewuser", newUser);
+        req.done(function(data){
+            alert("Utente Creato Correttamente");
+        })
+        req.fail(errore);
+    })
 
     /* **************************** AVVIO **************************** */
     let position = new google.maps.LatLng(44.5557763, 7.7347183);	
@@ -42,7 +56,17 @@ marcatore1.addListener("click", function(){
     
     
     */
-    let mailRQ = inviaRichiesta('GET', '/api/elencoPerizie/' + localStorage.getItem("_id"));
+    let mailRQ;
+    mailRQ = inviaRichiesta('GET', '/api/elencoPerizie/' + localStorage.getItem("_id"));
+    if(localStorage.getItem("_id") == 0){
+        $("#btnCrea").css("visibility", "visible");
+        $("#btnCrea").on("click", function(){
+            $(".container").eq(0).css("display", "none");
+            $("#creaUser").css("display", "block");
+        })
+    }
+    else $("#btnCrea").css("visibility", "hidden");
+
     mailRQ.done(function(data) {
         $(".container").css("visibility", "visible");
         visualizzaPerizie(data);
@@ -85,7 +109,8 @@ marcatore1.addListener("click", function(){
                 divDettagli.find("div").remove();
                 for (const photo of perizia.photos) 
                 {
-                    imgCard.find("p").text(photo.desc);
+                    /// Scaricare le immagini da cloudinary
+                    imgCard.find("input").val(photo.desc);
                     imgCard.clone().appendTo(divDettagli);
                 }
             });

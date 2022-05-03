@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZKYgxbiyRE7DknUpnRP2QHCBVjvLgH7g">	</script>
+	<script src="https://maps.googleapis.com/maps/api/js?">	</script>
 
     <link rel="stylesheet" href="index.css">
     <script type="text/javascript" src="libreria.js"></script>
@@ -29,6 +29,7 @@
             <div class="col-sm-2">
                 <button type="button" class="btn btn-secondary" style="margin-top:16px" id="btnLogout">Logout</button>
             </div>
+            
         </div>
 
         <!--filter perizie-->
@@ -39,17 +40,21 @@
                     <label for="txtTo" style="justify-content:left">Luogo:</label>
                     <input type="text" class="form-control" id="txtTo" placeholder="Enter Place">
                 </div>
-                <div class="col-md-3 col-sm-12">
+                <div class="col-md-2 col-sm-12">
                     <label for="txtSubject" style="justify-content:left">Data:</label>
-                    <input type="text" class="form-control" id="txtSubject" placeholder="Enter Date">
+                    <input type="date" class="form-control" id="txtSubject" placeholder="Enter Date">
                 </div>
                 <div class="col-md-3 col-sm-12">
                     <label for="txtId" style="justify-content:left">Id:</label>
                     <input type="text" class="form-control" id="txtId" placeholder="Enter id">
                 </div>
-                <div class="col-md-3 col-sm-12">
+                <div class="col-md-2 col-sm-12">
                     <label>&nbsp;</label>
                     <button type="button" class="btn btn-secondary" id="btnInvia">Cerca</button>
+                </div>
+                <div class="col-md-2 col-sm-12">
+                    <label>&nbsp;</label>
+                    <button type="button" class="btn btn-secondary" id="btnCrea">Crea Utente</button>
                 </div>
             </div>
         </form>
@@ -84,11 +89,19 @@
             <div id="imgCard" class="card" style="width: 20rem; margin: 10px;">
                 <img class="card-img-top" alt="Card image cap">
                 <div class="card-body">
-                  <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
+                  Description: <br><input style="margin: 0 !important;" class="card-text" type="text" class="form-control col-md-12 col-sm-12" placeholder="desc">
                 </div>
             </div>
         </form>
     </div>
+    <form id="creaUser" class="my-form form-inline">
+        <div>Name: <input id="txtNewName" type="text" class="form-control col-md-4 col-sm-12" placeholder="Name"> </div>
+        <div>Cognome: <input id="txtNewSurname" type="text" class="form-control col-md-4 col-sm-12" placeholder="Surname"> </div>
+        <div>Username: <input id="txtNewUser" type="text" class="form-control col-md-4 col-sm-12" placeholder="Psw"> </div>
+        <div>Dob: <input id="txtNewDob" type="date" class="form-control col-md-4 col-sm-12"> </div>
+
+        <button style="margin-right: 10px;" class="btn btn-secondary" id="btncreateUser"> Create</button>
+    </form>
     <!-- end container -->
 
 </body>
