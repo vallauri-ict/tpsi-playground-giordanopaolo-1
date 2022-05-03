@@ -114,10 +114,41 @@ marcatore1.addListener("click", function(){
                     imgCard.find("input").val(photo.desc);
                     imgCard.clone().appendTo(divDettagli);
                 }
+                let geoc = new google.maps.Geocoder();
+                geoc.geocode( {'address': perizia.coodrdinateGeo}, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK)
+                    {
+                        let gpsOptions = {
+                            "center":results[0].geometry.location,
+                            timeout: 5000,		
+                            maximumAge: 0 // tempo max di presenza in cache della risposta (ms), ogni volta aggiorna la cache
+                        }
+                        navigator.geolocation.getCurrentPosition(visualizzaPosizione, errore, gpsOptions)
+                    }
+                    else
+                        alert("Stringa immessa non valida");
+                });
+                
             });
+            
             
         }
     }
+    function visualizzaPosizione(position){
+		let posizione = new google.maps.LatLng(44.5557763, 7.7347183)
+		let mapOptions = {
+			"center":posizione,
+			"zoom":16,
+		}
+        $(document.getElementById("mappa")).empty();
+		let mappa = new google.maps.Map(document.getElementById("mappa"),mapOptions);
+		let marker = new google.maps.Marker({
+			"position":posizione,
+			"map":mappa,
+			"animation":google.maps.Animation.BOUNCE,
+			"title": "Questa è la tua posizione"
+		})
+	}
 
     function openPerizia()
     {
