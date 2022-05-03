@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZKYgxbiyRE7DknUpnRP2QHCBVjvLgH7g">	</script>
 
     <link rel="stylesheet" href="index.css">
     <script type="text/javascript" src="libreria.js"></script>
@@ -30,36 +31,36 @@
             </div>
         </div>
 
-        <!--send mail-->
-        <form class="form-inline" id="frmInvia">
+        <!--filter perizie-->
+        <form class="form-inline" id="frmFilter">
             <div class="row" style="width:100%">
-                <!-- TO -->
-                <div class="col-md-2 col-sm-12">
-                    <label for="txtTo" style="justify-content:left">TO:</label>
-                    <input type="text" class="form-control" id="txtTo" placeholder="Enter Recipient">
+                <!-- Luogo -->
+                <div class="col-md-3 col-sm-12">
+                    <label for="txtTo" style="justify-content:left">Luogo:</label>
+                    <input type="text" class="form-control" id="txtTo" placeholder="Enter Place">
                 </div>
-                <div class="col-md-2 col-sm-12">
-                    <label for="txtSubject" style="justify-content:left">Subject:</label>
-                    <input type="text" class="form-control" id="txtSubject" placeholder="Enter Subject">
+                <div class="col-md-3 col-sm-12">
+                    <label for="txtSubject" style="justify-content:left">Data:</label>
+                    <input type="text" class="form-control" id="txtSubject" placeholder="Enter Date">
                 </div>
-                <div class="col-md-7 col-sm-12">
-                    <label for="txtMessage" style="justify-content:left">Message:</label>
-                    <input type="text" class="form-control" id="txtMessage" placeholder="Enter message">
+                <div class="col-md-3 col-sm-12">
+                    <label for="txtId" style="justify-content:left">Id:</label>
+                    <input type="text" class="form-control" id="txtId" placeholder="Enter id">
                 </div>
-                <div class="col-md-1 col-sm-12">
+                <div class="col-md-3 col-sm-12">
                     <label>&nbsp;</label>
-                    <button type="button" class="btn btn-secondary" id="btnInvia">Invia</button>
+                    <button type="button" class="btn btn-secondary" id="btnInvia">Cerca</button>
                 </div>
             </div>
         </form>
 
-        <!-- elenco mail-->
+        <!-- elenco Perizie-->
         <table class="table table-hover" id="tabMail">
             <thead>
                 <tr>
-                    <th width="16.5%">From</th>
-                    <th width="16.5%">Subject</th>
-                    <th width="67%">Body</th>
+                    <th width="25%">Luogo</th>
+                    <th width="25%">Data</th>
+                    <th width="50%">Desc</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,6 +68,26 @@
             </tbody>
         </table>
 
+        <div class="row align-items-center">
+            <div id="mappa" class="col-sm-10 text-center" style="padding:15px;">
+            </div>
+        </div>
+        <h3 id="titleDettagli">Dettagli</h3>
+        <form class="form-inline" id="divDetails">
+            
+            Id: <input id="txtIdBelow" type="text" class="form-control col-md-4 col-sm-12" placeholder="Id">
+            Place: <input id="txtPlace" type="text" class="form-control col-md-6 col-sm-12" placeholder="Place">
+            Coordinate: <input id="txtCoordinate" type="text" class="form-control col-md-5 col-sm-12" placeholder="coodrdinate">
+            Date: <input id="txtDate" type="text" class="form-control col-md-5 col-sm-12" placeholder="Date">
+            Description: <input id="txtDescription" type="text" class="form-control col-md-10 col-sm-12" placeholder="Description">
+
+            <div id="imgCard" class="card" style="width: 20rem; margin: 10px;">
+                <img class="card-img-top" alt="Card image cap">
+                <div class="card-body">
+                  <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
+                </div>
+            </div>
+        </form>
     </div>
     <!-- end container -->
 

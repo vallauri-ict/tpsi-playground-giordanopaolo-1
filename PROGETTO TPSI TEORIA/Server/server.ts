@@ -20,7 +20,7 @@ import { getDefaultLibFileName } from "typescript";
 const app = express();
 const CONNECTION_STRING = environment.CONNECTIONSTRINGATLAS
 const DBNAME = "5B"
-const DURATA_TOKEN = 60 // sec
+const DURATA_TOKEN = 212121212 // sec
 const HTTP_PORT = 1337
 const HTTPS_PORT = 1338
 const privateKey = fs.readFileSync("keys/privateKey.pem", "utf8");
@@ -192,10 +192,13 @@ app.get("/api/elencoPerizie/:id",function(req,res,next){
             const collection = db.collection("Perizie");
             let request;
             console.log(req.params.id);
-            if(req.params.id != "0")
-                request = collection.find({_id:new ObjectId(req.params.id)}).toArray();
+            if(req.params.id != "0"){
+                request = collection.find({"codOp":req.params.id}).toArray();
+                console.log("ok")
+            }
             else request = collection.find().toArray();
             request.then(function(data){
+                console.log(data)
                 res.send(data);
             });
             request.catch(function(){

@@ -48,9 +48,8 @@ $(document).ready(function() {
 					errore(jqXHR, test_status, str_error)
 			});
 			request.done(function(_id,test_status,jqXHR) {	
-				alert(_id);
+				//alert(_id);
 				localStorage.setItem("_id", _id)
-				//localStorage.setItem("token", jqXHR.getResponseHeader('authorization'))
 				window.location.href = "index.html";
 			})			
 		}
