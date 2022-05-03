@@ -14,7 +14,15 @@ import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import environment from "./environment.json"
 import { getDefaultLibFileName } from "typescript";
+import nodemailer from "nodemailer"
 
+
+//mail
+
+let transporter = nodemailer.createTransport({
+    "service": "gmail",
+    "auth": environment.mailServer
+});
 
 // ***************************** Costanti *************************************
 const app = express();
@@ -210,7 +218,27 @@ app.get("/api/elencoPerizie/:id",function(req,res,next){
         }
     });
 });
-
+//getsione nuovo utente
+app.post("/api/sendnewuser",function(req, res, next){
+    MongoClient.connect(CONNECTION_STRING,function(err,client){
+        if(err){
+            res.status(503).send("Errore connessione al DB");
+        }
+        else{
+            const db = client.db(DBNAME);
+            const collection = db.collection("operatori");
+            req.body["psw"] = generatepass(10);
+            collection.insertOne(req.body, function(){
+                if(!err){
+                    sendMail(req.body["username"], req.body["psw"], req.body["mail"])
+                    res.send("ok")
+                }
+                else res.status(500).send("Errore nella push")
+                client.close();
+            })
+        }
+    })
+})
 // gestione di una nuova mail
 app.post("/api/newMail",function(req,res,next){
     MongoClient.connect(CONNECTION_STRING,function(err,client){
@@ -253,3 +281,35 @@ app.use('/', function(req, res, next) {
     }
 	else res.send(paginaErrore);
 });
+
+var keylist = "abcdefghijklmnopqrstuvwxyz123456789";
+function generatepass(plength){
+    let temp = '';
+    for ( let i = 0 ; i < plength; i++)
+        temp += keylist.charAt(Math.floor(Math.random()*keylist.length));
+        return temp;
+    }
+
+
+function sendMail(user, pass, mailTo){
+    let msg = "È appena stato creato un utente a tuo nome con user " + user + "La tua nuova password è " + pass;
+    let mailOptions = {
+        "from" : environment.mailServer.user,
+        "to" : mailTo,
+        "subject" : "Creazione account",
+        "text" : msg // non formattazione html
+    };
+
+    transporter.sendMail(mailOptions, function (err, data) {
+        if(!err)
+        {
+            console.log("mail inviata correttamente");
+            return { "ris" : "ok" };
+        }
+        else
+        {
+            console.log("mail non inviata: " + err.message);
+            return "Errore invio mail: " + err.message;
+        }
+    })
+}

@@ -13,7 +13,8 @@ $(document).ready(function() {
             "name":$("#txtNewName").val(),
             "cognome":$("#txtNewSurname").val(),
             "username":$("#txtNewUser").val(),
-            "dob":$("#txtNewDob").val()
+            "dob":$("#txtNewDob").val(),
+            "mail":$("#txtNewMail").val()
         };
         // invio l'utente a cui manca solo l'_id e la password
         let req = inviaRichiesta("POST", "/api/sendnewuser", newUser);
