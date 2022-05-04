@@ -54,6 +54,12 @@
 	margin:10px auto;		
 }
 
+#mappagps{
+	width:500px;
+	height:400px;
+	margin:10px auto;
+}
+
 #infoWindow { padding:0; text-align:left; }
 #infoWindow p { padding:0; margin:0}
 #infoWindow p:last-of-type {margin-bottom:10px }

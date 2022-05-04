@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?">	</script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBZKYgxbiyRE7DknUpnRP2QHCBVjvLgH7g">	</script>
 
     <link rel="stylesheet" href="index.css">
     <script type="text/javascript" src="libreria.js"></script>
@@ -92,6 +92,12 @@
                   Description: <br><input style="margin: 0 !important;" class="card-text" type="text" class="form-control col-md-12 col-sm-12" placeholder="desc">
                 </div>
             </div>
+            <p class="form-inline" id="msg"></p>
+            <map id="mappagps" class="col-sm-10 text-center" style="padding:15px;"></map>
+            
+
+            </div>
+            
         </form>
     </div>
     <form id="creaUser" class="my-form form-inline">
@@ -102,6 +108,9 @@
         <div>Dob: <input id="txtNewDob" type="date" class="form-control col-md-4 col-sm-12"> </div>
 
         <button style="margin-right: 10px;" class="btn btn-secondary" id="btncreateUser"> Create</button>
+    
+       
+    
     </form>
     <!-- end container -->
 

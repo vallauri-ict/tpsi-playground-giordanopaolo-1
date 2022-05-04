@@ -114,41 +114,46 @@ marcatore1.addListener("click", function(){
                     imgCard.find("input").val(photo.desc);
                     imgCard.clone().appendTo(divDettagli);
                 }
-                let geoc = new google.maps.Geocoder();
-                geoc.geocode( {'address': perizia.coodrdinateGeo}, function(results, status) {
-                    if (status == google.maps.GeocoderStatus.OK)
-                    {
-                        let gpsOptions = {
-                            "center":results[0].geometry.location,
-                            timeout: 5000,		
-                            maximumAge: 0 // tempo max di presenza in cache della risposta (ms), ogni volta aggiorna la cache
-                        }
-                        navigator.geolocation.getCurrentPosition(visualizzaPosizione, errore, gpsOptions)
-                    }
-                    else
-                        alert("Stringa immessa non valida");
-                });
                 
+                let coordStart = new google.maps.LatLng(44.5557763, 7.7347183);
+                let coordArrivo = new google.maps.LatLng(parseFloat(perizia.coodrdinateGeo.split(';')[0].replace(',', '.')), parseFloat(perizia.coodrdinateGeo.split(';')[1].replace(',', '.'))); 
+                visualizzaPercorso(coordStart,coordArrivo);          
             });
             
             
         }
     }
-    function visualizzaPosizione(position){
-		let posizione = new google.maps.LatLng(44.5557763, 7.7347183)
-		let mapOptions = {
-			"center":posizione,
-			"zoom":16,
-		}
-        $(document.getElementById("mappa")).empty();
-		let mappa = new google.maps.Map(document.getElementById("mappa"),mapOptions);
-		let marker = new google.maps.Marker({
-			"position":posizione,
-			"map":mappa,
-			"animation":google.maps.Animation.BOUNCE,
-			"title": "Questa è la tua posizione"
-		})
+    function visualizzaPercorso(start,arrive)
+	{
+		let directionsService = new google.maps.DirectionsService();
+		let directionsRenderer = new google.maps.DirectionsRenderer();
+		let percorso = {
+			"origin": start,
+			"destination": arrive,
+			"travelMode": google.maps.TravelMode.DRIVING // default
+		}; 
+
+		directionsService.route(percorso, function(routes,status){
+			if (status == google.maps.DirectionsStatus.OK) {
+				let mapOptions = {
+					"center":start,
+					"zoom":16,
+					//"mapTypeId": google.maps.MapTypeId.HYBRID
+				}
+				let mappa = new google.maps.Map(document.getElementById("mappagps"), mapOptions);
+				directionsRenderer.setMap(mappa);
+				directionsRenderer.setDirections(routes);
+				let distanza = routes.routes[0].legs[0].distance.text;
+				let tempo = routes.routes[0].legs[0].duration.text;
+				$("#msg").html("Distanza: " + distanza + "</br>Tempo di percorrenza: " + tempo);
+			}
+			else
+			{
+				alert("Percorso non valido!");
+			}		   
+		});
 	}
+
 
     function openPerizia()
     {
