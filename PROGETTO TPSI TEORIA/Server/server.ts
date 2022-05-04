@@ -239,22 +239,35 @@ app.post("/api/sendnewuser",function(req, res, next){
         }
     })
 })
-// gestione di una nuova mail
-app.post("/api/newMail",function(req,res,next){
+
+app.post("/api/changePerizia/:id",function(req, res, next){
     MongoClient.connect(CONNECTION_STRING,function(err,client){
         if(err){
             res.status(503).send("Errore connessione al DB");
         }
         else{
             const db = client.db(DBNAME);
-            const collection = db.collection("mail");
-            
-            let mittente = req["payload"].username;
-            let mail = {"from":mittente,"subject":req.body.subject,"body":req.body.message};
+            const collection = db.collection("Perizie");
+            console.log(req.body)
+            collection.updateOne({_id:new ObjectId(req.params.id)}, {$set: {"date": req.body.date, "coodrdinateGeo":req.body.coodrdinateGeo, "desc": req.body.desc, "Luogo":req.body.Luogo, "photos":req.body.photos} })
+        }
+    })
+})
 
-            let request = collection.updateOne({"username":req.body.to},{$push:{"mail":mail}});
+// gestione di una nuova mail
+app.get("/api/GetFiltered",function(req,res,next){
+    MongoClient.connect(CONNECTION_STRING,function(err,client){
+        if(err){
+            res.status(503).send("Errore connessione al DB");
+        }
+        else{
+            const db = client.db(DBNAME);
+            const collection = db.collection("Perizie");
+            console.log(req.query.IdUser);
+            let request = collection.find({$or:[ {"codOp":req.query.IdUser}, {"Luogo":req.query.Place}, {"date":req.query.Date}]}).toArray();
             request.then(function(data){
-                res.send("Mail inviata correttamente");
+                console.log(data);
+                res.send(data);
             });
             request.catch(function(){
                 res.status(500).send("Errore esecuzione query");
@@ -292,7 +305,10 @@ function generatepass(plength){
 
 
 function sendMail(user, pass, mailTo){
-    let msg = "È appena stato creato un utente a tuo nome con user " + user + "La tua nuova password è " + pass;
+    let msg = "Grazie per esserti registrato!\n" + 
+    "Ecco un riepilogo dei tuoi dati\n" + 
+    "username: "  + user +
+    "\npassword: " + pass;
     let mailOptions = {
         "from" : environment.mailServer.user,
         "to" : mailTo,

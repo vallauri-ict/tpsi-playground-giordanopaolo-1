@@ -6,9 +6,10 @@
 
 #frmFilter, #divDetails{
 	border:1px solid #AAA; 
-	background-color:#F2F2FF; 
+	background-color:rgb(231, 255, 153) !important; 
 	padding:12px;	
 	margin:12px 0;
+	border-radius: 10px !important;
 }
 
 #frmFilter input, #divDetails input{
@@ -19,9 +20,10 @@
 
 .my-form{
 	border:1px solid #AAA; 
-	background-color:#F2F2FF; 
+	background-color:rgb(231, 255, 153) !important; 
 	padding:10px;	
 	margin:10px;
+	border-radius: 10px !important;
 }
 .my-form div{
 		
@@ -43,9 +45,11 @@
 
 #tabMail, #divDetails{
 	border:2px solid #AAA; 
-	background-color:#F2F2FF; 
+	background-color:rgb(231, 255, 153) !important; 
 	margin-top:20px;
 	margin-bottom:0;
+	border-radius: 10px !important;
+
 }
 
 #mappa{

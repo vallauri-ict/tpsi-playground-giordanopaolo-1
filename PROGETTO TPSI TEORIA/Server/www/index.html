@@ -35,30 +35,28 @@
         <!--filter perizie-->
         <form class="form-inline" id="frmFilter">
             <div class="row" style="width:100%">
-                <!-- Luogo -->
-                <div class="col-md-3 col-sm-12">
-                    <label for="txtTo" style="justify-content:left">Luogo:</label>
-                    <input type="text" class="form-control" id="txtTo" placeholder="Enter Place">
+                <div class="col-md-2 col-sm-12">
+                    <label for="txtTo" style="justify-content:left">Place:</label>
+                    <input type="text" class="form-control" id="txtPLace" placeholder="Enter Place">
                 </div>
                 <div class="col-md-2 col-sm-12">
-                    <label for="txtSubject" style="justify-content:left">Data:</label>
-                    <input type="date" class="form-control" id="txtSubject" placeholder="Enter Date">
-                </div>
-                <div class="col-md-3 col-sm-12">
-                    <label for="txtId" style="justify-content:left">Id:</label>
-                    <input type="text" class="form-control" id="txtId" placeholder="Enter id">
+                    <label for="txtSubject" style="justify-content:left">Date:</label>
+                    <input type="date" class="form-control" id="txtDate" placeholder="Enter Date">
                 </div>
                 <div class="col-md-2 col-sm-12">
+                    <label for="txtUser" style="justify-content:left">IdUser:</label>
+                    <input type="text" class="form-control" id="IdUser" placeholder="Enter IdUser">
+                </div>
+                <div style="text-align: center;" class="col-md-2 col-sm-12">
                     <label>&nbsp;</label>
-                    <button type="button" class="btn btn-secondary" id="btnInvia">Cerca</button>
+                    <button type="button" class="btn btn-secondary" id="btnInvia">Find</button>
                 </div>
-                <div class="col-md-2 col-sm-12">
+                <div style="text-align: center;" class="col-md-2 col-sm-12">
                     <label>&nbsp;</label>
                     <button type="button" class="btn btn-secondary" id="btnCrea">Crea Utente</button>
                 </div>
             </div>
         </form>
-
         <!-- elenco Perizie-->
         <table class="table table-hover" id="tabMail">
             <thead>
@@ -77,10 +75,10 @@
             <div id="mappa" class="col-sm-10 text-center" style="padding:15px;">
             </div>
         </div>
-        <h3 id="titleDettagli">Dettagli</h3>
+        <h4 id="titleDettagli">Dettagli</h4>
         <form class="form-inline" id="divDetails">
             
-            Id: <input id="txtIdBelow" type="text" class="form-control col-md-4 col-sm-12" placeholder="Id">
+            Id: <input disabled id="txtIdBelow" type="text" class="form-control col-md-4 col-sm-12" placeholder="Id">
             Place: <input id="txtPlace" type="text" class="form-control col-md-6 col-sm-12" placeholder="Place">
             Coordinate: <input id="txtCoordinate" type="text" class="form-control col-md-5 col-sm-12" placeholder="coodrdinate">
             Date: <input id="txtDate" type="text" class="form-control col-md-5 col-sm-12" placeholder="Date">
@@ -94,10 +92,6 @@
             </div>
             <p class="form-inline" id="msg"></p>
             <map id="mappagps" class="col-sm-10 text-center" style="padding:15px;"></map>
-            
-
-            </div>
-            
         </form>
     </div>
     <form id="creaUser" class="my-form form-inline">

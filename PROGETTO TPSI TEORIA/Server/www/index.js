@@ -6,6 +6,7 @@ $(document).ready(function() {
     let divDettagli = $("#divDetails");
     divDettagli.css("visibility","hidden");
     let imgCard = $("#imgCard");
+    let markers = [] //vettore di markers
     $("#imgCard").remove();
     $("#creaUser").css("display", "none");
     $("#btncreateUser").on("click", function(){
@@ -79,6 +80,11 @@ marcatore1.addListener("click", function(){
     /* ********************** Visualizza Mail  *********************** */
     function visualizzaPerizie(data) {
         console.log(data);
+        for (let i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);//tolgo il markers
+          }
+        
+        $("#updateData").remove();
         for (let perizia of data) {
             let tr = $('<tr>');
             $('<td>').text(perizia.Luogo).appendTo(tr);
@@ -98,6 +104,8 @@ marcatore1.addListener("click", function(){
                 "draggable":true,
                 "zIndex" : 3
             });
+            markers.push(marcatore);
+
             
             marcatore.addListener("click",function(){
                 divDettagli.css("visibility","visible"); 
@@ -112,7 +120,10 @@ marcatore1.addListener("click", function(){
                 {
                     /// Scaricare le immagini da cloudinary
                     imgCard.find("input").val(photo.desc);
+                    imgCard.find("img").prop("alt",photo.imgName);
+                    imgCard.find("img").prop("src",photo.imgName);
                     imgCard.clone().appendTo(divDettagli);
+                    
                 }
                 
                 let coordStart = new google.maps.LatLng(44.5557763, 7.7347183);
@@ -122,6 +133,10 @@ marcatore1.addListener("click", function(){
             
             
         }
+        let button = $("<button type='button' id='updateData' class='btn btn-secondary'>")
+        button.text("Update");
+        button.appendTo(divDettagli);
+        button.on("click", InviaUpdate)
     }
     function visualizzaPercorso(start,arrive)
 	{
@@ -146,14 +161,36 @@ marcatore1.addListener("click", function(){
 				let distanza = routes.routes[0].legs[0].distance.text;
 				let tempo = routes.routes[0].legs[0].duration.text;
 				$("#msg").html("Distanza: " + distanza + "</br>Tempo di percorrenza: " + tempo);
-			}
+                
+            }
 			else
 			{
-				alert("Percorso non valido!");
+				alert("Percorso non valido! \nPuoi provare a non farlo passare in mezzo all'oceano");
 			}		   
 		});
 	}
-
+    function InviaUpdate(){
+        let parent = $(this).parent();
+        let _id = $("#txtIdBelow").val();
+        let updatedJson={
+            "Luogo":$("#txtPlace").val(),
+            "coodrdinateGeo":$("#txtCoordinate").val(),
+            "date":$("#txtDate").val(),
+            "desc":$("#txtDescription").val()
+        }
+        let vet = [];
+        for (const item of parent.children()) {
+            if($(item).hasClass("card")){
+                vet.push({"img":$(item).find("img").prop("alt"),"desc":$(item).find("input").val()});
+            }
+        }
+        updatedJson["photos"] = vet;
+        console.log(updatedJson);
+        let request = inviaRichiesta("post", "/api/changePerizia/" + _id, updatedJson)
+        request.done(function(data){
+            visualizzaPerizie(data);
+        })
+    }
 
     function openPerizia()
     {
@@ -161,17 +198,17 @@ marcatore1.addListener("click", function(){
     }
     /* ************************* Invio Mail  *********************** */
     _btnInvia.on("click", function() {
-        let mail = {
-            "to": $("#txtTo").val(),
-            "subject": $("#txtSubject").val(),
-            "message": $("#txtMessage").val()
+        let params = {
+            "Place": $("#txtPLace").val(),
+            "Date": $("#txtDate").val(),
+            "IdUser": $("#IdUser").val(),
         }
-        let newMailRQ = inviaRichiesta('POST', '/api/newMail', mail);
-        newMailRQ.done(function(data) {
-            console.log(data);
-            alert({"ris":"ok"});
+        let GetFiltered = inviaRichiesta('Get', '/api/GetFiltered', params);
+        GetFiltered.done(function(data) {
+            visualizzaPerizie(data);
+            
         });
-        newMailRQ.fail(errore)
+        GetFiltered.fail(errore)
     });
 
 
