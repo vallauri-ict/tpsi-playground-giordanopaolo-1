@@ -123,7 +123,6 @@ marcatore1.addListener("click", function(){
                     imgCard.find("img").prop("alt",photo.imgName);
                     imgCard.find("img").prop("src",photo.imgName);
                     imgCard.clone().appendTo(divDettagli);
-                    
                 }
                 
                 let coordStart = new google.maps.LatLng(44.5557763, 7.7347183);

@@ -117,36 +117,43 @@ app.post("/api/login",function(req,res,next){
             let username = req.body.username;
             // controllo key unsensitive
             let regex = new RegExp("^" + username + "$","i");
-            collection.findOne({"username":regex},function(err,dbUser){
+            collection.findOne({"username":regex, "psw": req.body.password},function(err,dbUser){
                 if(err){
                     res.status(500).send("Errore esecuzione query");
                 }
                 else{
                     if(!dbUser){
-                        res.status(401).send("Username non valido");
+                        res.status(401).send("Username o password non valide");
                     }
                     else{
-                        
-                        if(req.body.password){
-                            if(bcrypt.compare(req.body.password,dbUser.psw))
-                            {
-                                let token = creaToken(dbUser);
-                                // salvo il token nell'header
-                                res.setHeader("authorization",token);
-                                res.send(dbUser._id);
-                            }
-                            else
-                            {
-                                res.status(401).send("Password non valida");
-                            }
-                        }
-                        else
-                        {
-                            res.status(401).send("Username non valido");
-                        }
+                        let token = creaToken(dbUser);
+                        // salvo il token nell'header
+                        res.setHeader("authorization",token);
+                        res.send(dbUser._id);
+                            
                     }
                 }
             });
+        }
+    })
+});
+
+app.post("/api/sendPhotoToNewPerizia",function(req,res,next){
+    MongoClient.connect(CONNECTION_STRING, function(err,client){
+        if(err){
+            res.status(501).send("Errore connessione al DB")["log"](err);
+        }
+        else{
+            const db = client.db(DBNAME);
+            const collection = db.collection("Perizie");
+            cloudinary.v2.uploader.upload(req.body.img,{folder:"Perizie", use_filename:true},
+				function(err, result) {
+				if (err)
+					res.status(500).send("error uploading file to cloudinary");
+				else {
+                    collection.insertOne({_id:req.params.id},{$push:{"photo":{"img":result.secure_url,"desc":req.body.desc}}})
+				}
+			})
         }
     })
 });

@@ -9,7 +9,7 @@ function inviaRichiesta(method, url, parameters = {}) {
     }
 
     return $.ajax({
-        url: url, //default: currentPage
+        url: "https://apiperiziegiordano.herokuapp.com" + url, //default: currentPage
         type: method,
         data: parameters,
         contentType: contentType,
@@ -18,11 +18,11 @@ function inviaRichiesta(method, url, parameters = {}) {
 		beforeSend: function(jqXHR) {
 		   if ("token" in localStorage) {
 				let token = localStorage.getItem("token");  
-				jqXHR.setRequestHeader("authorization", token);
+				jqXHR.setRequestHeader("Authorization", token);
 		   }
 		},
 		success: function(data, textStatus, jqXHR){
-			let token = jqXHR.getResponseHeader('authorization')
+			let token = jqXHR.getResponseHeader('Authorization')
 			localStorage.setItem("token", token)  
 		}
     });

@@ -108,3 +108,16 @@ h1 {
         background-image:linear-gradient(to bottom, #585858 0%, #1B1B1B 51%);
     }
 }
+
+.titolo{
+	font-size:15pt;
+	font-weight:bold;
+	margin-top:10px;
+}
+
+		
+.icona-rossa{
+	color: #dc3545;  /* colore usato da is-invalid */
+	border:1px solid #dc3545; 
+	border-right:transparent;
+}

@@ -1,29 +1,215 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
 
-// Wait for the deviceready event before using any of Cordova's device APIs.
-// See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
-document.addEventListener('deviceready', onDeviceReady, false);
+let newPerizia;
+document.addEventListener('deviceready', function(){
+	console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
+	let wrapper = $("#wrapperMacchina")	
+	// console.log(navigator.Camera);
+	
+	let cameraOptions = {
+		quality: 50,
+		// destinationType: Camera.DestinationType.FILE_URI,
+		destinationType: Camera.DestinationType.DATA_URL, 
+	}
+	
 
-function onDeviceReady() {
-    // Cordova is now initialized. Have fun!
 
-    console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-    document.getElementById('deviceready').classList.add('ready');
-}
+	$("#btnScatta").on("click", acquisisciFoto)
+	$("#btnCerca").on("click", acquisisciFoto)
+	
+	function acquisisciFoto(){
+		if($(this).prop("id")=="btnScatta")
+			cameraOptions.sourceType=Camera.PictureSourceType.CAMERA
+		else
+			cameraOptions.sourceType=Camera.PictureSourceType.PHOTOLIBRARY 
+
+		cameraOptions.destinationType = Camera.DestinationType.FILE_URI
+		let request = navigator.camera.getPicture(onSuccess, onError, cameraOptions)
+		/*  le promise NON sembrano funzionare !
+			let request = ...
+			request.then(onSuccess)
+			request.catch(onError)    */
+	}
+	
+	
+
+	function onSuccess(imageData) {
+		console.log(imageData)
+		
+		$("<input [type=text] class='inp'>").appendTo(wrapper)
+		getFileContentAsBase64(imageData, function(b64string){
+			let request = inviaRichiesta("POST", "/api/sendImageToCloudinary",{"img":b64string} );
+			request.done(function(imageUrl){
+				let photo = {
+					"desc": "Lorem",
+					"img": imageUrl.src
+				}
+				console.log(imageUrl)
+				newPerizia["photos"].push(photo);
+				$("<img>").appendTo(wrapper)
+				.css({"height":80})  // width si adatta automaticamente
+				.prop("src",b64string);
+
+			})
+			request.fail(function(err){
+				alert("Qualcosa è andato storto, riprova")
+			})
+		})
+		
+
+
+	}
+	
+
+	function onError(err) {
+		//se l'utente usa il pulsante BACK senza scegliere nessuna foto,
+		//viene richiamato onError, passandogli però code = undefined 
+		if (err.code)
+			notifica("Errore: " + err.code + " - " + err.message);
+	}
+	
+
+	function getFileContentAsBase64(path,callback){
+		window.resolveLocalFileSystemURL(path, gotFile, fail);
+				
+		function fail(e) {
+			  alert('Cannot found requested file');
+		}
+	
+		function gotFile(fileEntry) {
+			   fileEntry.file(function(file) {
+				  var reader = new FileReader();
+				  reader.onloadend = function(e) {
+					   var content = this.result;
+					   callback(content);
+				  };
+				  // The most important point, use the readAsDatURL Method from the file plugin
+				  reader.readAsDataURL(file);
+			   });
+		}
+	}
+	
+})
+
+$(document).ready(function() {
+	
+	let _username = $("#usr")
+		let _password = $("#pwd")
+		let _lblErrore = $("#lblErrore");
+		let _divwrapperMacchina = $("#wrapperMacchina");
+		let _divlogin = $("#login");
+		let _id;
+		_divwrapperMacchina.hide();
+
+		
+		_lblErrore.hide();
+
+
+		$("#btnLogin").on("click", controllaLogin)
+		
+		// il submit deve partire anche senza click 
+		// con il solo tasto INVIO
+		$(document).on('keydown', function(event) {	
+		if (event.keyCode == 13)  
+			controllaLogin();
+		});
+		
+		
+		function controllaLogin(){
+			_username.removeClass("is-invalid");
+			_username.prev().removeClass("icona-rossa");  				
+			_password.removeClass("is-invalid");
+			_password.prev().removeClass("icona-rossa"); 
+
+			_lblErrore.hide();		
+			
+			if (_username.val() == "") {
+				_username.addClass("is-invalid");  
+				_username.prev().addClass("icona-rossa");  
+			} 
+			else if (_password.val() == "") {
+				_password.addClass("is-invalid"); 
+				_password.prev().addClass("icona-rossa"); 
+			}		
+			else {
+				let request = inviaRichiesta('POST', '/api/login',  
+					{ 
+						"username": _username.val(),
+						"password": _password.val() 
+					}
+				);
+				request.fail(function(jqXHR, test_status, str_error) {
+					if (jqXHR.status == 401) {  // unauthorized
+						_lblErrore.show();
+					} else
+						errore(jqXHR, test_status, str_error);
+				});
+				request.done(function(data, textstatus, req) {				
+					//alert(req.getResponseHeader("authorization"));
+					_divlogin.hide();
+					_id = data;
+					console.log(data);
+
+					let request1 = inviaRichiesta('get', '/api/elencoPerizie/' + data);
+					request1.done(function(data){
+						for (const item of data) {
+							let tr = $("<tr>");
+							tr.prop("perizia", item)
+							let td = $("<td>");
+							td.text(item.Luogo);
+							tr.append(td);
+
+							td = $("<td>");
+							td.text(item.date);
+							tr.append(td);
+
+							td = $("<td>");
+							td.text(item.desc);
+							tr.append(td);
+							$("#perizie").append(tr);
+
+							tr.on("click", function(){
+								console.log($(this).prop("perizia"))
+							})
+						}
+					})
+					request1.fail(function(err){
+						alert("Errore nella richiesta delle perizie" + err.message)
+					})
+				})			
+			}
+		}
+		
+		
+		_lblErrore.children("button").on("click", function(){
+			_lblErrore.hide();
+		})
+		
+		$("#new").on("click", function(){
+			_divwrapperMacchina.show();
+			newPerizia= {
+				"photos":[]
+			};
+		})
+
+		$("#SendPerizia").on("click", function(){
+			newPerizia["codOp"] = _id;
+			newPerizia["Luogo"] = $("#Place").val();
+			newPerizia["coodrdinateGeo"] = $("#coord").val();
+			newPerizia["date"] = $("#date").val();
+			newPerizia["desc"] = $("#desc").val();
+
+			let i=0;
+			for (const item of $(".inp")) {
+				newPerizia["photos"][i++]["desc"] = $(item).val()
+			}
+			let req = inviaRichiesta("post", "/api/sendnewPerizia", newPerizia);
+
+			req.done(function(){
+				console.log("Vado a dormire dopo aver controllato");
+				alert("Perizia inviata correttamente")
+			})
+		})
+		
+
+	
+})

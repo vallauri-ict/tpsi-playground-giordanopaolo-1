@@ -1,44 +1,31 @@
-<!DOCTYPE html>
-<!--
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
 <html>
     <head>
-        <meta charset="utf-8">
-        <!-- Cordova Meta Tags -->    
-            <meta http-equiv="Content-Security-Policy"  
-                content="default-src *;  script-src * 'unsafe-inline';  style-src * 'unsafe-inline';  img-src *  data:  content:; ">
-            <meta name="format-detection" content="telephone=no">
-            <meta name="msapplication-tap-highlight" content="no">
-            <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
-            <meta name="color-scheme" content="light dark">	
-            
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/login.css">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.slim.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script src="js/libreria.js"></script>
-        <script src="js/login.js"></script>
+        
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="img/logo.png" type="image/png" />
+        <meta http-equiv="Content-Security-Policy" content="
+        default-src *;
+        script-src * 'unsafe-inline';
+        style-src * 'unsafe-inline';
+        img-src * data: content:; "
+       >
+    
+	<!-- -->        
+       
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/libreria.js"></script>
+        <script src="js/index.js"></script>
         <title>Perizie Giordano</title>
+        <script src="cordova.js"></script>
+<script src="HelloPlugin.js"></script>
+
     </head>
     <body>
-        <div class="container" style="margin-top:60px">		
+        <div id="login" class="container" style="margin-top:60px">		
 
             <!-- JUMBOTRON  -->
             <div class="row">
@@ -53,7 +40,7 @@
             </div>
         
         
-            <!-- LOGIN FORM -->	
+            <!-- LOGIN FORM  -->	
             <div class="row" id="login">   
                 <div class="col-md-3 col-sm-2"></div>
                 <div class="col-md-6 col-sm-8">			
@@ -61,7 +48,7 @@
                         <div class="form-group input-group">
                             <!-- Quando mettiamo l'icona aggiungiamo anche input-group  
                                  in modo che icona e inputBox vengano raggruppati 
-                                 sulla stessa riga -->
+                                 sulla stessa riga  -->
                             <span class="input-group-text">
                                 <i class="fas fa-user"> </i>
                             </span>
@@ -69,7 +56,7 @@
                                    placeholder="Username">
                         </div>
                         
-                        <!-- password -->
+                        <!-- password  -->
                         <div class="form-group input-group">
                             <span class="input-group-text">
                                 <i class="fas fa-lock"> </i>
@@ -82,13 +69,13 @@
                         <!-- messaggio di errore -->
                         <div class="alert alert-danger alert-dismissible" id="lblErrore">	
                                <!-- Dentro button è stato eliminato data-dismiss="alert"
-                                 che non consente più il successivo .show() del msg -->
+                                 che non consente più il successivo .show() del msg  -->
                             <button type="button" class="close" >&times;</button>
                             <strong>Attenzione!</strong> Username o Password non validi
                         </div>
         
                                         
-                      <!-- pulsanti -->
+                      <!-- pulsanti  -->
                       <div class="form-group">
                           <button type="button" class="btn btn-secondary btn-block" 
                                   id="btnLogin">	LOGIN
@@ -106,8 +93,32 @@
                 <!-- fine col-sm-4 -->
                 <div class="col-md-3 col-sm-3"></div>
             </div>
-            <!-- form login -->
-         
-        </div>	
+        </div>
+        <div>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th width="25%">Luogo</th>
+                        <th width="25%">Data</th>
+                        <th width="50%">Desc</th>
+                    </tr>
+                </thead>
+                <tbody id="perizie">
+    
+                </tbody>
+            </table>
+            <button id="new" class="btn btn-primary">+</button>
+        </div>
+        <div id="wrapperMacchina">
+            <button class="btn" id="btnScatta">Scatta</button>&nbsp;
+            <button class="btn" id="btnCerca">Cerca</button>
+            <br>
+            Coordinate:<input type="text" id="coord">
+            Data: <input type="date" id="date">
+            Luogo: <input type="text" id="Place">
+            Desc Generale<input type="text" id="desc">
+            <button class="btn" id="SendPerizia">Send Perizia</button>
+        </div>
     </body>
+
 </html>
