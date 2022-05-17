@@ -22,7 +22,7 @@ document.addEventListener('deviceready', function(){
 		else
 			cameraOptions.sourceType=Camera.PictureSourceType.PHOTOLIBRARY 
 
-		cameraOptions.destinationType = Camera.DestinationType.FILE_URI
+		cameraOptions.destinationType = Camera.DestinationType.DATA_URL
 		let request = navigator.camera.getPicture(onSuccess, onError, cameraOptions)
 		/*  le promise NON sembrano funzionare !
 			let request = ...
@@ -36,8 +36,8 @@ document.addEventListener('deviceready', function(){
 		console.log(imageData)
 		
 		$("<input [type=text] class='inp'>").appendTo(wrapper)
-		getFileContentAsBase64(imageData, function(b64string){
-			let request = inviaRichiesta("POST", "/api/sendImageToCloudinary",{"img":b64string} );
+
+		let request = inviaRichiesta("POST", "/api/sendImageToCloudinary",{"img": "data:image4/jpeg;base64,"  + imageData}  );
 			request.done(function(imageUrl){
 				let photo = {
 					"desc": "Lorem",
@@ -47,13 +47,13 @@ document.addEventListener('deviceready', function(){
 				newPerizia["photos"].push(photo);
 				$("<img>").appendTo(wrapper)
 				.css({"height":80})  // width si adatta automaticamente
-				.prop("src",b64string);
+				.prop("src", b64string);
 
 			})
-			request.fail(function(err){
-				alert("Qualcosa è andato storto, riprova")
+			request.fail(function(){
+				alert("Qualcosa è andato storto, riptova")
 			})
-		})
+
 		
 
 
@@ -66,28 +66,6 @@ document.addEventListener('deviceready', function(){
 		if (err.code)
 			notifica("Errore: " + err.code + " - " + err.message);
 	}
-	
-
-	function getFileContentAsBase64(path,callback){
-		window.resolveLocalFileSystemURL(path, gotFile, fail);
-				
-		function fail(e) {
-			  alert('Cannot found requested file');
-		}
-	
-		function gotFile(fileEntry) {
-			   fileEntry.file(function(file) {
-				  var reader = new FileReader();
-				  reader.onloadend = function(e) {
-					   var content = this.result;
-					   callback(content);
-				  };
-				  // The most important point, use the readAsDatURL Method from the file plugin
-				  reader.readAsDataURL(file);
-			   });
-		}
-	}
-	
 })
 
 $(document).ready(function() {
@@ -205,8 +183,11 @@ $(document).ready(function() {
 			let req = inviaRichiesta("post", "/api/sendnewPerizia", newPerizia);
 
 			req.done(function(){
-				console.log("Vado a dormire dopo aver controllato");
 				alert("Perizia inviata correttamente")
+			})
+
+			req.fail(function(){
+				alert("Qualcosa è andato storto");
 			})
 		})
 		

@@ -93,7 +93,9 @@ const corsOptions = {
     origin: function(origin, callback) {
           return callback(null, true);
     },
-    credentials: true
+    credentials: true,
+    allowedHeaders: [ 'Content-Type', "authorization" ],
+    exposedHeaders: [ "authorization" ]
 };
 app.use("/", cors(corsOptions));
 
@@ -138,27 +140,7 @@ app.post("/api/login",function(req,res,next){
     })
 });
 
-app.post("/api/sendPhotoToNewPerizia",function(req,res,next){
-    MongoClient.connect(CONNECTION_STRING, function(err,client){
-        if(err){
-            res.status(501).send("Errore connessione al DB")["log"](err);
-        }
-        else{
-            const db = client.db(DBNAME);
-            const collection = db.collection("Perizie");
-            cloudinary.v2.uploader.upload(req.body.img,{folder:"Perizie", use_filename:true},
-				function(err, result) {
-				if (err)
-					res.status(500).send("error uploading file to cloudinary");
-				else {
-                    collection.insertOne({_id:req.params.id},{$push:{"photo":{"img":result.secure_url,"desc":req.body.desc}}})
-				}
-			})
-        }
-    })
-});
-
-app.use("/api/",function(req,res,next){
+app.use("/",function(req,res,next){
     let token;
     if(req.headers.authorization){
         token = req.headers.authorization;
@@ -180,6 +162,28 @@ app.use("/api/",function(req,res,next){
         res.status(403).send("Token assente");
     }
 })
+
+
+app.post("/api/sendPhotoToNewPerizia",function(req,res,next){
+    MongoClient.connect(CONNECTION_STRING, function(err,client){
+        if(err){
+            res.status(501).send("Errore connessione al DB")["log"](err);
+        }
+        else{
+            const db = client.db(DBNAME);
+            const collection = db.collection("Perizie");
+            cloudinary.v2.uploader.upload(req.body.img,{folder:"Perizie", use_filename:true},
+				function(err, result) {
+				if (err)
+					res.status(500).send("error uploading file to cloudinary");
+				else {
+                    res.send({"src":result.secure_url})
+				}
+			})
+        }
+    })
+});
+
 
 function creaToken(dbUser){
     let data = Math.floor((new Date()).getTime() / 1000); // ottengo i secondi arrotondati
