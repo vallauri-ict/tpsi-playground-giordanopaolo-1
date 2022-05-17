@@ -41,7 +41,7 @@ document.addEventListener('deviceready', function(){
 			request.done(function(imageUrl){
 				let photo = {
 					"desc": "Lorem",
-					"img": imageUrl.src
+					"imgName": imageUrl.src
 				}
 				console.log(imageUrl)
 				newPerizia["photos"].push(photo);
@@ -171,24 +171,34 @@ $(document).ready(function() {
 
 		$("#SendPerizia").on("click", function(){
 			newPerizia["codOp"] = _id;
-			newPerizia["Luogo"] = $("#Place").val();
-			newPerizia["coodrdinateGeo"] = $("#coord").val();
-			newPerizia["date"] = $("#date").val();
-			newPerizia["desc"] = $("#desc").val();
-
-			let i=0;
-			for (const item of $(".inp")) {
-				newPerizia["photos"][i++]["desc"] = $(item).val()
+			let gpsOptions = {
+				enableHighAccuracy: false, // default
+				timeout: 5000,		
+				maximumAge: 0 // tempo max di presenza in cache della risposta (ms), ogni volta aggiorna la cache
 			}
-			let req = inviaRichiesta("post", "/api/sendnewPerizia", newPerizia);
+			// da testare
+			navigator.geolocation.getCurrentPosition(function(coords){
+				newPerizia["Luogo"] = $("#Place").val();
+				newPerizia["coodrdinateGeo"] = coords;
+				newPerizia["date"] = $("#date").val();
+				newPerizia["desc"] = $("#desc").val();
+				let i=0;
+				for (const item of $(".inp")) {
+					newPerizia["photos"][i++]["desc"] = $(item).val()
+				}
+				let req = inviaRichiesta("post", "/api/sendnewPerizia", newPerizia);
 
-			req.done(function(){
-				alert("Perizia inviata correttamente")
-			})
+				req.done(function(){
+					alert("Perizia inviata correttamente")
+				})
 
-			req.fail(function(){
-				alert("Qualcosa è andato storto");
-			})
+				req.fail(function(){
+					alert("Qualcosa è andato storto");
+				})
+			}, errore, gpsOptions)
+			
+
+			
 		})
 		
 

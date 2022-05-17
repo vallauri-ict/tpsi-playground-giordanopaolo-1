@@ -29,7 +29,7 @@ const app = express();
 const CONNECTION_STRING = environment.CONNECTIONSTRINGATLAS
 const DBNAME = "5B"
 const DURATA_TOKEN = 212121212 // sec
-const HTTP_PORT = 1337
+const HTTP_PORT = parseInt(process.env.PORT) || 1337
 const HTTPS_PORT = 1338
 const privateKey = fs.readFileSync("keys/privateKey.pem", "utf8");
 const certificate = fs.readFileSync("keys/certificate.crt", "utf8");
@@ -41,34 +41,23 @@ cloudinary.v2.config({
 	api_secret: environment.CLOUDINARY.API_SECRET,
 })
 
-
 // ***************************** Avvio ****************************************
 const httpServer = http.createServer(app);
 httpServer.listen(HTTP_PORT, function() {
     console.log("Server HTTP in ascolto sulla porta " + HTTP_PORT);
-    init();
 });
-let paginaErrore = "";
-function init() {
-    fs.readFile("./www/error.html", function(err, data) {
-        if (!err)
-            paginaErrore = data.toString();
-        else
-            paginaErrore = "<h1>Risorsa non trovata</h1>"
-    });
-}
-// app.response.log = function(err){console.log(`*** Error *** ${err.message}`)}
-app.response["log"] = function(err){console.log(`*** Error *** ${err.message}`)}
+    // app.response.log = function(err){console.log(`*** Error *** ${err.message}`)}
+    app.response["log"] = function(err){console.log(`*** Error *** ${err.message}`)}
+    
+    
+    /* *********************** (Sezione 1) Middleware ********************* */
+    
 
-
-/* *********************** (Sezione 1) Middleware ********************* */
 // 1. Request log
-app.use("/", function(req, res, next) {
-    console.log("** " + req.method + " ** : " + req.originalUrl);
+    app.use("/", function(req, res, next) {
+        console.log("** " + req.method + " ** : " + req.originalUrl);
     next();
 });
-
-
 // 2 - route risorse statiche
 app.use("/", express.static('./www'));
 
@@ -81,23 +70,24 @@ app.use("/", body_parser.urlencoded({"extended": true, "limit": "10mb"}));
 // 4 - log dei parametri 
 app.use("/", function(req, res, next) {
     if (Object.keys(req.query).length > 0)
-        console.log("        Parametri GET: ", req.query)
+    console.log("        Parametri GET: ", req.query)
     if (Object.keys(req.body).length != 0)
-        console.log("        Parametri BODY: ", req.body)
+    console.log("        Parametri BODY: ", req.body)
     next();
 });
 
 
-// 5. cors accepting every call
+
+// 5. middleware cors, gestisce le richieste cross origin
 const corsOptions = {
     origin: function(origin, callback) {
-          return callback(null, true);
+    return callback(null, true);
     },
     credentials: true,
     allowedHeaders: [ 'Content-Type', "authorization" ],
     exposedHeaders: [ "authorization" ]
-};
-app.use("/", cors(corsOptions));
+   };
+   app.use("/", cors(corsOptions));
 
 
 // 6 - binary upload
@@ -140,7 +130,7 @@ app.post("/api/login",function(req,res,next){
     })
 });
 
-app.use("/",function(req,res,next){
+app.use("/api/",function(req,res,next){
     let token;
     if(req.headers.authorization){
         token = req.headers.authorization;
@@ -162,28 +152,6 @@ app.use("/",function(req,res,next){
         res.status(403).send("Token assente");
     }
 })
-
-
-app.post("/api/sendPhotoToNewPerizia",function(req,res,next){
-    MongoClient.connect(CONNECTION_STRING, function(err,client){
-        if(err){
-            res.status(501).send("Errore connessione al DB")["log"](err);
-        }
-        else{
-            const db = client.db(DBNAME);
-            const collection = db.collection("Perizie");
-            cloudinary.v2.uploader.upload(req.body.img,{folder:"Perizie", use_filename:true},
-				function(err, result) {
-				if (err)
-					res.status(500).send("error uploading file to cloudinary");
-				else {
-                    res.send({"src":result.secure_url})
-				}
-			})
-        }
-    })
-});
-
 
 function creaToken(dbUser){
     let data = Math.floor((new Date()).getTime() / 1000); // ottengo i secondi arrotondati
@@ -289,8 +257,39 @@ app.get("/api/GetFiltered",function(req,res,next){
         }
     });
 });
+app.post("/api/sendnewPerizia",function(req,res,next){
+    MongoClient.connect(CONNECTION_STRING, function(err,client){
+        if(err){
+            res.status(501).send("Errore connessione al DB")["log"](err);
+        }
+        else{
+            const db = client.db(DBNAME);
+            const collection = db.collection("Perizie");
+            collection.insertOne(req.body)
+			res.send({"ris":"ok"})
+        }
+    })
+});
 
-
+app.post("/api/sendImageToCloudinary",function(req,res,next){
+    MongoClient.connect(CONNECTION_STRING, function(err,client){
+        if(err){
+            res.status(501).send("Errore connessione al DB")["log"](err);
+        }
+        else{
+            const db = client.db(DBNAME);
+            const collection = db.collection("Perizie");
+            cloudinary.v2.uploader.upload(req.body.img,{folder:"Perizie", use_filename:true},
+				function(err, result) {
+				if (err)
+					res.status(500).send("error uploading file to cloudinary");
+				else {
+                    res.send({"src":result.secure_url})
+				}
+			})
+        }
+    })
+});
 /* ***************** (Sezione 4) DEFAULT ROUTE and ERRORS ******************* */
 // gestione degli errori
 app.use(function(err, req, res, next) {
@@ -303,7 +302,7 @@ app.use('/', function(req, res, next) {
     if (req.originalUrl.startsWith("/api/")) {
         res.send("Risorsa non trovata");
     }
-	else res.send(paginaErrore);
+	else res.send("paginaErrore");
 });
 
 var keylist = "abcdefghijklmnopqrstuvwxyz123456789";

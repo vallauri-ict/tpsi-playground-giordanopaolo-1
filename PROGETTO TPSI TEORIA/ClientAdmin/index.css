@@ -1,0 +1,74 @@
+
+.container{
+	padding-top:15px;
+	visibility:hidden;
+}
+
+#frmFilter, #divDetails{
+	border:1px solid #AAA; 
+	background-color:rgb(231, 255, 153) !important; 
+	padding:12px;	
+	margin:12px 0;
+	border-radius: 10px !important;
+}
+
+#frmFilter input, #divDetails input{
+	padding:7px;
+	width:100%;
+	font-size:0.88em;
+}
+
+.my-form{
+	border:1px solid #AAA; 
+	background-color:rgb(231, 255, 153) !important; 
+	padding:10px;	
+	margin:10px;
+	border-radius: 10px !important;
+}
+.my-form div{
+		
+	margin:10px;
+}
+
+#divDetails input{
+	margin: 12px;
+}
+/* terminale md */
+@media  (min-width:768px) and (max-width:992px){ 
+	#frmFilter input, #divDetails input{
+		width:120%;
+	}
+	#frmFilter div:nth-of-type(3) input{
+		width:105%;
+	}
+}
+
+#tabMail, #divDetails{
+	border:2px solid #AAA; 
+	background-color:rgb(231, 255, 153) !important; 
+	margin-top:20px;
+	margin-bottom:0;
+	border-radius: 10px !important;
+
+}
+
+#mappa{
+	width:800px;
+	height:600px;
+	margin:10px auto;		
+}
+
+#mappagps{
+	width:500px;
+	height:400px;
+	margin:10px auto;
+}
+
+#infoWindow { padding:0; text-align:left; }
+#infoWindow p { padding:0; margin:0}
+#infoWindow p:last-of-type {margin-bottom:10px }
+
+.map-icon-label  .map-icon {
+	font-size: 20px;   /* default 24px  */
+	color: #FF0000;
+}
