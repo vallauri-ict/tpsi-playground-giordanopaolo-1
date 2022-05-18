@@ -79,14 +79,7 @@
                       <div class="form-group">
                           <button type="button" class="btn btn-secondary btn-block" 
                                   id="btnLogin">	LOGIN
-                          </button>	
-                          <button type="button" class="btn btn-link" style="height:18px">
-                                registrati  
-                          </button>	
-                          <br>
-                          <button type="button" class="btn btn-link" style="height:18px">
-                               hai dimenticato la password?  
-                          </button>								
+                          </button>						
                       </div>					
                     </form>
                 </div>	
@@ -94,7 +87,7 @@
                 <div class="col-md-3 col-sm-3"></div>
             </div>
         </div>
-        <div>
+        <div id="table">
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -107,17 +100,20 @@
     
                 </tbody>
             </table>
-            <button id="new" class="btn btn-primary">+</button>
+            <button id="new" class="btn btn-primary">Nuova perizia</button>
         </div>
         <div id="wrapperMacchina">
             <button class="btn" id="btnScatta">Scatta</button>&nbsp;
             <button class="btn" id="btnCerca">Cerca</button>
             <br>
-            Coordinate:<input type="text" id="coord">
             Data: <input type="date" id="date">
-            Luogo: <input type="text" id="Place">
+            <br>
+            Luogo: <input type="text" id="Place"><br>
+            Coordinate<input type="text" id="cords">
+            <br>
             Desc Generale<input type="text" id="desc">
-            <button class="btn" id="SendPerizia">Send Perizia</button>
+            <br>
+            <button class="btn" id="SendPerizia">Send Perizia</button><br><br><br>
         </div>
     </body>
 

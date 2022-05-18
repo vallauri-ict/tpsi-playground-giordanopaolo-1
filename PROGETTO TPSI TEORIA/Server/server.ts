@@ -107,23 +107,19 @@ app.post("/api/login",function(req,res,next){
             const db = client.db(DBNAME);
             const collection = db.collection("operatori");
             let username = req.body.username;
+            console.log(req.body);
             // controllo key unsensitive
-            let regex = new RegExp("^" + username + "$","i");
-            collection.findOne({"username":regex, "psw": req.body.password},function(err,dbUser){
-                if(err){
+            let regex = new RegExp(`^${username}$`, "i"); //per il controllo case unsensitive
+            collection.findOne({ "username" : regex }, function (err, dbUser) {
+                if(err)
                     res.status(500).send("Errore esecuzione query");
-                }
-                else{
-                    if(!dbUser){
-                        res.status(401).send("Username o password non valide");
-                    }
-                    else{
-                        let token = creaToken(dbUser);
-                        // salvo il token nell'header
-                        res.setHeader("authorization",token);
-                        res.send(dbUser._id);
-                            
-                    }
+                else if(!bcrypt.compareSync(req.body.password, dbUser.psw))
+                    res.status(401).send("Password non valida");
+                else
+                {
+                    let token = creaToken(dbUser);
+                    res.setHeader("authorization", token);
+                    res.send({ "ris" : dbUser._id });
                 }
             });
         }
@@ -169,6 +165,34 @@ function creaToken(dbUser){
 /* ********************** (Sezione 3) USER ROUTES  ************************** */
 // gestione elenco delle perizie fatte da utente :id
 // id == 0 (ritorno tutte le perizie)
+app.post("/api/sendnewuser",function(req, res, next){
+    console.log("ok4")
+    MongoClient.connect(CONNECTION_STRING,function(err,client){
+        if(err){
+            res.status(503).send("Errore connessione al DB");
+        }
+        else{
+            const db = client.db(DBNAME);
+            const collection = db.collection("operatori");
+            let psw = generatepass(10)
+
+            req.body["psw"] = bcrypt.hashSync(psw, 10);     
+            console.log("ok3")
+
+            collection.insertOne(req.body, function(){
+                if(!err){
+                    console.log("ok1")
+                    sendMail(req.body["username"], psw, req.body["mail"])
+                    console.log("ok2")
+
+                    res.send({"ris":"ok"})
+                }
+                else res.status(500).send("Errore nella push")
+                client.close();
+            })
+        }
+    })
+})
 app.get("/api/elencoPerizie/:id",function(req,res,next){
     MongoClient.connect(CONNECTION_STRING,function(err,client){
         if(err){
@@ -198,26 +222,7 @@ app.get("/api/elencoPerizie/:id",function(req,res,next){
     });
 });
 //getsione nuovo utente
-app.post("/api/sendnewuser",function(req, res, next){
-    MongoClient.connect(CONNECTION_STRING,function(err,client){
-        if(err){
-            res.status(503).send("Errore connessione al DB");
-        }
-        else{
-            const db = client.db(DBNAME);
-            const collection = db.collection("operatori");
-            req.body["psw"] = generatepass(10);
-            collection.insertOne(req.body, function(){
-                if(!err){
-                    sendMail(req.body["username"], req.body["psw"], req.body["mail"])
-                    res.send("ok")
-                }
-                else res.status(500).send("Errore nella push")
-                client.close();
-            })
-        }
-    })
-})
+
 
 app.post("/api/changePerizia/:id",function(req, res, next){
     MongoClient.connect(CONNECTION_STRING,function(err,client){

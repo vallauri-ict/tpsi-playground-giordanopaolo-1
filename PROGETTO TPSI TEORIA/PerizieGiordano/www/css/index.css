@@ -114,7 +114,10 @@ h1 {
 	font-weight:bold;
 	margin-top:10px;
 }
-
+#wrapperMacchina{
+    text-align: center;
+    margin: 0 auto;
+}
 		
 .icona-rossa{
 	color: #dc3545;  /* colore usato da is-invalid */

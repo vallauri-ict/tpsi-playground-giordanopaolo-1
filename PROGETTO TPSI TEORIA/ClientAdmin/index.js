@@ -36,29 +36,6 @@ $(document).ready(function() {
     }
     let mappa = new google.maps.Map(document.getElementById("mappa"), mapOptions); 
 
-
-
-    /*
-    
-
-let infoWindow1 = new google.maps.InfoWindow({
-	"content":
-		`<div id="infoWindow">
-			<h2> ITIS Vallauri
-				<img src="img/vallauri.jpg" align="top">
-			</h2>
-			<p>indirizzo: Via San Michele 68, Fossano</p>
-			<p>coordinate GPS: ${position.toString()} </p>
-		</div>`,
-	"width":"150px"
-});
-
-marcatore1.addListener("click", function(){
-	infoWindow1.open(mappa, marcatore1);
-})
-    
-    
-    */
     let mailRQ;
     mailRQ = inviaRichiesta('GET', '/api/elencoPerizie/' + localStorage.getItem("_id"));
     if(localStorage.getItem("_id") == 0){
@@ -109,26 +86,30 @@ marcatore1.addListener("click", function(){
 
             
             marcatore.addListener("click",function(){
+                
                 divDettagli.css("visibility","visible"); 
                 console.log(perizia._id)
                 $("#txtIdBelow").val(perizia._id);
                 $("#txtPlace").val(perizia.Luogo);
                 $("#txtCoordinate").val(perizia.coodrdinateGeo);
-                $("#txtDate").val(perizia.date.substring(0, 10));
+                $("#txtData").val(perizia["date"]);
                 $("#txtDescription").val(perizia.desc);
                 divDettagli.find("div").remove();
                 for (const photo of perizia.photos) 
                 {
-                    /// Scaricare le immagini da cloudinary
                     imgCard.find("input").val(photo.desc);
                     imgCard.find("img").prop("alt",photo.imgName);
                     imgCard.find("img").prop("src",photo.imgName);
                     imgCard.clone().appendTo(divDettagli);
                 }
-                
-                let coordStart = new google.maps.LatLng(44.5557763, 7.7347183);
-                let coordArrivo = new google.maps.LatLng(parseFloat(perizia.coodrdinateGeo.split(';')[0].replace(',', '.')), parseFloat(perizia.coodrdinateGeo.split(';')[1].replace(',', '.'))); 
-                visualizzaPercorso(coordStart,coordArrivo);          
+
+                try {
+                    let coordStart = new google.maps.LatLng(44.5557763, 7.7347183);
+                    let coordArrivo = new google.maps.LatLng(parseFloat(perizia.coodrdinateGeo.split(';')[0].replace(',', '.')), parseFloat(perizia.coodrdinateGeo.split(';')[1].replace(',', '.'))); 
+                    visualizzaPercorso(coordStart,coordArrivo);   
+                } catch (error) {
+                    alert("Percorso non visualizzabile")
+                }       
             });
             
             
@@ -165,6 +146,7 @@ marcatore1.addListener("click", function(){
             }
 			else
 			{
+                $("#msg").html("Distanza: ???");
 				alert("Percorso non valido!");
 			}		   
 		});
@@ -181,7 +163,7 @@ marcatore1.addListener("click", function(){
         let vet = [];
         for (const item of parent.children()) {
             if($(item).hasClass("card")){
-                vet.push({"img":$(item).find("img").prop("alt"),"desc":$(item).find("input").val()});
+                vet.push({"imgName":$(item).find("img").prop("alt"),"desc":$(item).find("input").val()});
             }
         }
         updatedJson["photos"] = vet;
@@ -189,6 +171,7 @@ marcatore1.addListener("click", function(){
         let request = inviaRichiesta("post", "/api/changePerizia/" + _id, updatedJson)
         request.done(function(data){
             visualizzaPerizie(data);
+            alert("Update eseguito correttamente")
         })
     }
 
@@ -210,12 +193,6 @@ marcatore1.addListener("click", function(){
         });
         GetFiltered.fail(errore)
     });
-
-
-    /*  Per il logout è inutile inviare una richiesta al server.
-		E' sufficiente cancellare il cookie o il token dal pc client
-		Una richiesta al server semplificherebbe la cancellazione del cookie  
-    */
 
     _btnLogout.on("click", function() {
         localStorage.removeItem("token")

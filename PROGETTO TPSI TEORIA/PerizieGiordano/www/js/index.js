@@ -43,11 +43,11 @@ document.addEventListener('deviceready', function(){
 					"desc": "Lorem",
 					"imgName": imageUrl.src
 				}
-				console.log(imageUrl)
+				//console.log(imageUrl)
 				newPerizia["photos"].push(photo);
 				$("<img>").appendTo(wrapper)
 				.css({"height":80})  // width si adatta automaticamente
-				.prop("src", b64string);
+				.prop("src", imageUrl.src);
 
 			})
 			request.fail(function(){
@@ -78,7 +78,7 @@ $(document).ready(function() {
 		let _id;
 		_divwrapperMacchina.hide();
 
-		
+		$("#table").hide()
 		_lblErrore.hide();
 
 
@@ -124,11 +124,12 @@ $(document).ready(function() {
 				request.done(function(data, textstatus, req) {				
 					//alert(req.getResponseHeader("authorization"));
 					_divlogin.hide();
-					_id = data;
+					_id = data.ris;
 					console.log(data);
 
-					let request1 = inviaRichiesta('get', '/api/elencoPerizie/' + data);
+					let request1 = inviaRichiesta('get', '/api/elencoPerizie/' + _id);
 					request1.done(function(data){
+						$("#table").show();
 						for (const item of data) {
 							let tr = $("<tr>");
 							tr.prop("perizia", item)
@@ -171,15 +172,8 @@ $(document).ready(function() {
 
 		$("#SendPerizia").on("click", function(){
 			newPerizia["codOp"] = _id;
-			let gpsOptions = {
-				enableHighAccuracy: false, // default
-				timeout: 5000,		
-				maximumAge: 0 // tempo max di presenza in cache della risposta (ms), ogni volta aggiorna la cache
-			}
-			// da testare
-			navigator.geolocation.getCurrentPosition(function(coords){
 				newPerizia["Luogo"] = $("#Place").val();
-				newPerizia["coodrdinateGeo"] = coords;
+				newPerizia["coodrdinateGeo"] = $("#cords").val();
 				newPerizia["date"] = $("#date").val();
 				newPerizia["desc"] = $("#desc").val();
 				let i=0;
@@ -195,8 +189,6 @@ $(document).ready(function() {
 				req.fail(function(){
 					alert("Qualcosa è andato storto");
 				})
-			}, errore, gpsOptions)
-			
 
 			
 		})
