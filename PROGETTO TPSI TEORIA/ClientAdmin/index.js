@@ -21,6 +21,7 @@ $(document).ready(function() {
         let req = inviaRichiesta("POST", "/api/sendnewuser", newUser);
         req.done(function(data){
             alert("Utente Creato Correttamente");
+            window.location.href = "index.html";
         })
         req.fail(errore);
     })
@@ -164,7 +165,7 @@ marcatore1.addListener("click", function(){
             }
 			else
 			{
-				alert("Percorso non valido! \nPuoi provare a non farlo passare in mezzo all'oceano");
+				alert("Percorso non valido!");
 			}		   
 		});
 	}
