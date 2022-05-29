@@ -11,7 +11,7 @@ import environment from "./environment.json"
 const app = express();
 const CONNECTION_STRING = environment.connectionString.ATLAS
 const DB_NAME = "5B"
-const COLLECTION = "big"
+const COLLECTION = "bigData"
 const HTTP_PORT = 1337
 
 
@@ -115,6 +115,27 @@ app.get('/api/getData', function(req, res, next) {
     });
 });
 
+app.get('/api/getData200', function(req, res, next) {
+    MongoClient.connect(CONNECTION_STRING,  function(err, client) {
+        if (err) {
+            res.status(503).send("Errore di connessione al database")["log"](err)
+        } else {
+            const DB = client.db(DB_NAME);
+            const collection = DB.collection(COLLECTION);
+			let sensorId = parseInt(req.query.sensor)
+			console.log(sensorId)
+            collection.find({"sensor.sensorId":sensorId}).sort({timestamp:-1}).limit(200).toArray(function(err, data) {
+                if (err)
+                    res.status(500).send("Errore esecuzione query")
+                else {
+					console.log(data)
+                    res.send(data);
+                }
+                client.close();
+            });
+        }
+    });
+});
 
 
 
